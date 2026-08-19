@@ -1,6 +1,6 @@
 # You Should Save
 
-**Glidepath** is a single-file, dependency-free Monte Carlo retirement simulator. Open `glidepath.html` in any browser — no build step, no server, no external libraries.
+**Glidepath** is a single-file, dependency-free Monte Carlo retirement simulator. Open `index.html` in any browser — no build step, no server, no external libraries.
 
 ## What it does
 
