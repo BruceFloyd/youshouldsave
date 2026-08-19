@@ -29,4 +29,4 @@ jobs:
             --exclude 'README.md' \
             --exclude 'CHANGELOG.md' \
             -e "ssh -i ~/.ssh/deploy_key" \
-            ./ "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:~/youshouldsave.com/"
+            ./ "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:~/ishouldsave.com/"
