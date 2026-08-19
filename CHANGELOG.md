@@ -2,6 +2,28 @@
 
 All notable changes to Glidepath, the Monte Carlo retirement simulator.
 
+## [2.0] — 2026-08-19
+
+Major engine upgrade toward advisor-grade planning: taxes and account types, guardrails spending, stress tests, and household modeling. The generator stays advisor-simple (iid normal by default).
+
+### Added
+- **Taxes & accounts.** Three buckets — taxable, tax-deferred, Roth — with a shared allocation and annual rebalance. Withdrawals gross up for tax: deferred at a user ordinary rate (default 22%), taxable at a user capital-gains rate (default 15%) assuming 50% of each withdrawal is gain, Roth tax-free. RMDs from deferred start at 73 or 75 by birth year (SECURE 2.0, auto-computed) using the Uniform Lifetime Table; excess RMD proceeds reinvest in taxable. Withdrawal order defaults to taxable → deferred → Roth, user-overridable. Savings direct to a chosen bucket (default deferred).
+- **Guardrails spending rule (new default).** Guyton–Klinger-style: cut spending by the slider amount when the current withdrawal rate breaches 120% of its starting level; restore when it falls below 80%. Cuts are sticky until recovery and floor at 70% of plan. The old down-year rule remains as "Simple" mode, plus a "Fixed" mode. A new hero stat reports the share of trials that ever cut spending — the honest companion to a high success rate under adaptive rules.
+- **Stress test panel.** Always-on: stock–bond correlation 0.40 (full 1,000-trial rerun), Social Security × 0.85 from a user year (default 2034, also available as a base-plan toggle), and four deterministic historical replays hitting in the first retirement years — 1966–82 stagflation, 2000–02 dot-com bust, 2008, and 2022 — using approximate real total returns.
+- **Joint household.** Optional spouse with own age, plan-to age (default 90), and Social Security benefit/claim age. After the first death the survivor keeps the larger benefit check and spending drops to a user factor (default 75%). The horizon runs to the later death; a new stat reports the age through which 90% of trials stay funded.
+- **Healthcare line.** User annual amount (default $7,000) added to spending from age 65, growing faster than CPI (default +1.5%/yr real). Flat line, not IRMAA brackets.
+- **Fees.** Annual fee/drag (default 0.20%) subtracted from returns before cash flows.
+- **Spending smile.** Optional −1%/yr real spending decline after a user age (default 75).
+- **Research toggles.** Stock mean: planning 6.8%/17.2% (default, labeled as a conservative forward assumption) vs. historical arithmetic 7.8%/18%. Distribution: normal (default) vs. Student-t df 5 for fat tails.
+- Collapsible input sections; honesty notes replacing the old assumptions blurb (iid caveat, stylized taxes, no LTC by default, CPI-W vs. household inflation, year-end timing).
+
+### Changed
+- Success stays "portfolio never hits $0" and failed-stays-failed; deterministic seeding and re-roll unchanged.
+- Sensitivity table now runs the full engine per cell and varies base spending only (healthcare unchanged).
+
+### Impact (default plan, now including taxes, fees, healthcare)
+- Success probability ~98% with guardrails; 55% of trials cut spending at least once. A fixed-spending $110k/yr variant scores 67% and runs dry at 88 in the 1966–82 replay — the adaptive rule, not optimism, carries the plan.
+
 ## [1.1] — 2026-08-19
 
 ### Added

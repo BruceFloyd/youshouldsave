@@ -105,7 +105,7 @@
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 1160px; margin: 0 auto; padding: 40px 24px 72px; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 40px 24px 72px; }
 
   .masthead { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
   h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
@@ -117,8 +117,8 @@
     color: var(--muted); margin: 0 0 12px;
   }
 
-  .layout { display: grid; grid-template-columns: 320px 1fr; gap: 24px; align-items: start; margin-top: 24px; }
-  @media (max-width: 920px) { .layout { grid-template-columns: 1fr; } }
+  .layout { display: grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start; margin-top: 24px; }
+  @media (max-width: 940px) { .layout { grid-template-columns: 1fr; } }
 
   .panel {
     background: var(--surface);
@@ -128,13 +128,13 @@
   }
 
   /* ---------- input rail ---------- */
-  .rail { display: flex; flex-direction: column; gap: 18px; position: sticky; top: 16px; }
-  @media (max-width: 920px) { .rail { position: static; } }
+  .rail { display: flex; flex-direction: column; gap: 4px; }
   .field { display: flex; flex-direction: column; gap: 5px; }
   .field label { font-size: 13px; font-weight: 600; color: var(--ink); }
   .field .hint { font-size: 12px; color: var(--muted); }
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  input[type="number"] {
+  .field-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  input[type="number"], select {
     width: 100%;
     font: 500 14px "IBM Plex Mono", ui-monospace, Menlo, monospace;
     font-variant-numeric: tabular-nums;
@@ -144,15 +144,33 @@
     border-radius: 6px;
     padding: 8px 10px;
   }
-  input[type="number"]:focus-visible, input[type="range"]:focus-visible, button:focus-visible {
+  select { font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 13px; }
+  input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-visible {
     outline: 2px solid var(--accent); outline-offset: 2px;
   }
+  .check-row { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
+  .check-row input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; margin: 0; }
   .slider-head { display: flex; justify-content: space-between; align-items: baseline; }
   .slider-head output {
     font: 600 13px "IBM Plex Mono", ui-monospace, Menlo, monospace;
     font-variant-numeric: tabular-nums;
   }
   input[type="range"] { width: 100%; accent-color: var(--accent); margin: 2px 0 0; }
+  details.sect { border-top: 1px solid var(--grid); padding: 10px 0; }
+  details.sect:first-of-type { border-top: none; padding-top: 0; }
+  details.sect summary {
+    cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center;
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--muted); padding: 4px 0;
+  }
+  details.sect summary::-webkit-details-marker { display: none; }
+  details.sect summary::after { content: "+"; font-size: 14px; color: var(--muted); }
+  details.sect[open] summary::after { content: "\2212"; }
+  details.sect .sect-body { display: flex; flex-direction: column; gap: 14px; padding: 8px 0 6px; }
+  .joint-only { display: none !important; }
+  form.joint .joint-only { display: grid !important; }
+  form.joint .joint-only.field { display: flex !important; }
   .alloc-bar {
     display: flex; height: 10px; border-radius: 5px; overflow: hidden; gap: 2px;
     background: var(--page); margin-top: 4px;
@@ -166,14 +184,14 @@
   .swatch { width: 9px; height: 9px; border-radius: 2px; display: inline-block; flex: none; }
   .blend-note {
     font-size: 12px; color: var(--ink-2);
-    border-top: 1px solid var(--grid); padding-top: 12px; margin-top: 2px;
+    border-top: 1px solid var(--grid); padding-top: 12px; margin-top: 8px;
   }
   .blend-note .mono { font-variant-numeric: tabular-nums; color: var(--ink); }
   button.reroll {
     font: 600 13px "IBM Plex Sans", system-ui, sans-serif;
     color: var(--ink); background: var(--input-bg);
     border: 1px solid var(--border); border-radius: 6px;
-    padding: 9px 12px; cursor: pointer;
+    padding: 9px 12px; cursor: pointer; margin-top: 10px;
   }
   button.reroll:hover { border-color: var(--baseline); }
 
@@ -201,6 +219,7 @@
   .stat { border-left: 2px solid var(--grid); padding-left: 14px; }
   .stat .v { font: 600 19px "IBM Plex Mono", ui-monospace, Menlo, monospace; font-variant-numeric: tabular-nums; }
   .stat .k { font-size: 12px; color: var(--ink-2); }
+  .hero-note { font-size: 12px; color: var(--muted); margin: 16px 0 0; max-width: 72ch; }
 
   /* ---------- chart ---------- */
   .chart-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
@@ -224,7 +243,7 @@
   .direct-label { font: 600 11px "IBM Plex Mono", ui-monospace, Menlo, monospace; }
   .footnote { font-size: 12px; color: var(--muted); margin: 14px 0 0; max-width: 78ch; }
 
-  /* ---------- sensitivity table ---------- */
+  /* ---------- tables ---------- */
   .table-scroll { overflow-x: auto; margin-top: 12px; }
   table.sens { border-collapse: collapse; width: 100%; min-width: 560px; }
   table.sens caption { text-align: left; font-size: 12px; color: var(--muted); caption-side: bottom; padding-top: 10px; }
@@ -252,14 +271,24 @@
   table.sens td.current { outline: 2px solid var(--accent); outline-offset: -2px; font-weight: 600; }
   .corner-label { font-style: normal; font-weight: 400; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
 
+  table.stress { border-collapse: collapse; width: 100%; min-width: 520px; }
+  table.stress th, table.stress td { font-size: 13px; text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--grid); }
+  table.stress thead th {
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted);
+  }
+  table.stress td.num { font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  table.stress .delta { font-size: 12px; color: var(--ink-2); }
+  table.stress td .pill { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+  table.stress td .pill .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+
   .assumptions { font-size: 12.5px; color: var(--ink-2); }
   .assumptions h2 { font-size: 13px; margin: 0 0 8px; color: var(--ink); }
-  .assumptions p { margin: 0 0 8px; max-width: 82ch; }
+  .assumptions h3 { font-size: 12.5px; margin: 14px 0 4px; color: var(--ink); }
+  .assumptions p { margin: 0 0 8px; max-width: 84ch; }
+  .assumptions ul { margin: 0 0 8px; padding-left: 18px; max-width: 84ch; }
+  .assumptions li { margin-bottom: 3px; }
   .assumptions .mono { font-variant-numeric: tabular-nums; }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .hero-num, .stat .v, td { transition: opacity 120ms ease; }
-  }
 </style>
 
 <div class="wrap">
@@ -268,94 +297,228 @@
       <p class="eyebrow" style="margin-bottom:6px">Monte Carlo &middot; 1,000 trials</p>
       <h1>Glidepath</h1>
     </div>
-    <p class="tagline">Enter your plan on the left. Every change re-runs 1,000 randomized market histories and updates the odds, the range of outcomes, and the trade-off table.</p>
+    <p class="tagline">Enter your plan on the left. Every change re-runs 1,000 randomized market histories and updates the odds, the range of outcomes, the stress tests, and the trade-off table.</p>
   </header>
 
   <div class="layout">
     <!-- ============ INPUT RAIL ============ -->
     <form class="panel rail" id="controls" onsubmit="return false">
-      <p class="eyebrow" style="margin:0">Your plan</p>
 
-      <div class="field-row">
-        <div class="field">
-          <label for="curAge">Current age</label>
-          <input type="number" id="curAge" value="45" min="18" max="80" step="1">
+      <details class="sect" open>
+        <summary>Household</summary>
+        <div class="sect-body">
+          <div class="field-row">
+            <div class="field">
+              <label for="curAge">Current age</label>
+              <input type="number" id="curAge" value="45" min="18" max="80" step="1">
+            </div>
+            <div class="field">
+              <label for="retAge">Retire at</label>
+              <input type="number" id="retAge" value="65" min="30" max="85" step="1">
+            </div>
+          </div>
+          <div class="field">
+            <label for="planAge">Plan through age</label>
+            <input type="number" id="planAge" value="95" min="70" max="110" step="1">
+            <span class="hint">Money must last this long to count as a success.</span>
+          </div>
+          <label class="check-row"><input type="checkbox" id="joint"> Joint plan (two people)</label>
+          <div class="field-row joint-only">
+            <div class="field">
+              <label for="spAge">Spouse age</label>
+              <input type="number" id="spAge" value="45" min="18" max="90" step="1">
+            </div>
+            <div class="field">
+              <label for="spPlanAge">Spouse plan-to</label>
+              <input type="number" id="spPlanAge" value="90" min="70" max="110" step="1">
+            </div>
+          </div>
+          <div class="field joint-only">
+            <div class="slider-head">
+              <label for="survFactor">Survivor spending</label>
+              <output id="survOut" for="survFactor">75%</output>
+            </div>
+            <input type="range" id="survFactor" value="75" min="50" max="100" step="5">
+            <span class="hint">After the first death, household spending drops to this share.</span>
+          </div>
         </div>
-        <div class="field">
-          <label for="retAge">Retire at</label>
-          <input type="number" id="retAge" value="65" min="30" max="85" step="1">
-        </div>
-      </div>
+      </details>
 
-      <div class="field">
-        <label for="planAge">Plan through age</label>
-        <input type="number" id="planAge" value="95" min="70" max="110" step="1">
-        <span class="hint">Money must last to this age to count as a success.</span>
-      </div>
-
-      <div class="field">
-        <label for="portfolio">Portfolio today ($)</label>
-        <input type="number" id="portfolio" value="750000" min="0" step="10000">
-      </div>
-
-      <div class="field">
-        <label for="savings">Saved per year until retirement ($)</label>
-        <input type="number" id="savings" value="30000" min="0" step="1000">
-      </div>
-
-      <div class="field">
-        <label for="spend">Spent per year in retirement ($)</label>
-        <input type="number" id="spend" value="80000" min="0" step="1000">
-        <span class="hint">In today's dollars &mdash; the model works in real terms.</span>
-      </div>
-
-      <div class="field-row">
-        <div class="field">
-          <label for="ss">Social Security ($/yr)</label>
-          <input type="number" id="ss" value="24000" min="0" step="1000">
+      <details class="sect" open>
+        <summary>Accounts &amp; taxes</summary>
+        <div class="sect-body">
+          <div class="field-row-3">
+            <div class="field">
+              <label for="taxable">Taxable ($)</label>
+              <input type="number" id="taxable" value="150000" min="0" step="10000">
+            </div>
+            <div class="field">
+              <label for="deferred">Deferred ($)</label>
+              <input type="number" id="deferred" value="500000" min="0" step="10000">
+            </div>
+            <div class="field">
+              <label for="roth">Roth ($)</label>
+              <input type="number" id="roth" value="100000" min="0" step="10000">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="savings">Saved per year ($)</label>
+              <input type="number" id="savings" value="30000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label for="saveTo">Saved into</label>
+              <select id="saveTo">
+                <option value="d" selected>Tax-deferred</option>
+                <option value="t">Taxable</option>
+                <option value="r">Roth</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="ord">Ordinary rate %</label>
+              <input type="number" id="ord" value="22" min="0" max="50" step="1">
+            </div>
+            <div class="field">
+              <label for="cg">Cap-gains rate %</label>
+              <input type="number" id="cg" value="15" min="0" max="40" step="1">
+            </div>
+          </div>
+          <div class="field">
+            <label for="wOrder">Withdrawal order</label>
+            <select id="wOrder">
+              <option value="tdr" selected>Taxable &rarr; Deferred &rarr; Roth</option>
+              <option value="dtr">Deferred &rarr; Taxable &rarr; Roth</option>
+              <option value="trd">Taxable &rarr; Roth &rarr; Deferred</option>
+            </select>
+            <span class="hint">RMDs from deferred are always taken first once required.</span>
+          </div>
         </div>
-        <div class="field">
-          <label for="ssAge">Claim at</label>
-          <input type="number" id="ssAge" value="67" min="62" max="70" step="1">
-        </div>
-      </div>
-      <div class="field" style="margin-top:-10px">
-        <span class="hint">Estimated benefit in today's dollars. Set to $0 to exclude. Surplus benefit is reinvested.</span>
-      </div>
+      </details>
 
-      <div class="field">
-        <div class="slider-head">
-          <label for="flex">Spending cut in down years</label>
-          <output id="flexOut" for="flex">0%</output>
+      <details class="sect" open>
+        <summary>Social Security</summary>
+        <div class="sect-body">
+          <div class="field-row">
+            <div class="field">
+              <label for="ss">Benefit ($/yr)</label>
+              <input type="number" id="ss" value="24000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label for="ssAge">Claim at</label>
+              <input type="number" id="ssAge" value="67" min="62" max="70" step="1">
+            </div>
+          </div>
+          <div class="field-row joint-only">
+            <div class="field">
+              <label for="spSS">Spouse ($/yr)</label>
+              <input type="number" id="spSS" value="18000" min="0" step="1000">
+            </div>
+            <div class="field">
+              <label for="spSSAge">Claims at</label>
+              <input type="number" id="spSSAge" value="67" min="62" max="70" step="1">
+            </div>
+          </div>
+          <label class="check-row"><input type="checkbox" id="haircut"> Trim benefits to 85% from
+            <input type="number" id="haircutYear" value="2034" min="2026" max="2060" step="1" style="width:84px"></label>
+          <span class="hint">Trust-fund scenario. The stress panel below always shows its effect either way.</span>
         </div>
-        <input type="range" id="flex" value="0" min="0" max="30" step="5">
-        <span class="hint">In any year the portfolio loses money, that year's retirement spending drops by this much.</span>
-      </div>
+      </details>
 
-      <div class="field">
-        <div class="slider-head">
-          <label for="stocks">Stocks</label>
-          <output id="stocksOut" for="stocks">60%</output>
+      <details class="sect" open>
+        <summary>Spending</summary>
+        <div class="sect-body">
+          <div class="field">
+            <label for="spend">Spent per year in retirement ($)</label>
+            <input type="number" id="spend" value="80000" min="0" step="1000">
+            <span class="hint">Today's dollars, before taxes. Taxes are added on top when funding it.</span>
+          </div>
+          <div class="field">
+            <label for="rule">Spending rule</label>
+            <select id="rule">
+              <option value="guard" selected>Guardrails (cut when withdrawal rate breaches, sticky)</option>
+              <option value="simple">Simple (cut only in down years)</option>
+              <option value="fixed">Fixed (never adjust)</option>
+            </select>
+          </div>
+          <div class="field">
+            <div class="slider-head">
+              <label for="flex">Cut size</label>
+              <output id="flexOut" for="flex">10%</output>
+            </div>
+            <input type="range" id="flex" value="10" min="0" max="30" step="5">
+            <span class="hint">Guardrails: cut when the withdrawal rate runs 20% above its starting level; restore when it falls 20% below. Cuts floor at 70% of plan.</span>
+          </div>
+          <label class="check-row"><input type="checkbox" id="smile"> Spending smile: &minus;1%/yr real after age
+            <input type="number" id="smileAge" value="75" min="65" max="90" step="1" style="width:70px"></label>
+          <div class="field-row">
+            <div class="field">
+              <label for="hc">Healthcare ($/yr)</label>
+              <input type="number" id="hc" value="7000" min="0" step="500">
+            </div>
+            <div class="field">
+              <label for="hcGrow">Grows %/yr real</label>
+              <input type="number" id="hcGrow" value="1.5" min="0" max="5" step="0.5">
+            </div>
+          </div>
+          <span class="hint" style="margin-top:-8px">Added on top of spending from age 65. A flat line, not IRMAA brackets.</span>
         </div>
-        <input type="range" id="stocks" value="60" min="0" max="100" step="5">
-      </div>
-      <div class="field">
-        <div class="slider-head">
-          <label for="bonds">Bonds</label>
-          <output id="bondsOut" for="bonds">30%</output>
-        </div>
-        <input type="range" id="bonds" value="30" min="0" max="100" step="5">
-        <div class="alloc-bar" aria-hidden="true">
-          <span class="s" id="allocS"></span><span class="b" id="allocB"></span><span class="c" id="allocC"></span>
-        </div>
-        <div class="alloc-legend">
-          <span class="key"><span class="swatch" style="background:var(--alloc-stocks)"></span>Stocks</span>
-          <span class="key"><span class="swatch" style="background:var(--alloc-bonds)"></span>Bonds</span>
-          <span class="key"><span class="swatch" style="background:var(--alloc-cash)"></span>Cash <span class="mono" id="cashOut">10%</span></span>
-        </div>
-      </div>
+      </details>
 
-      <p class="blend-note">Blended real return <span class="mono" id="blendMu">&mdash;</span> &middot; volatility <span class="mono" id="blendSigma">&mdash;</span> per year</p>
+      <details class="sect" open>
+        <summary>Allocation &amp; fees</summary>
+        <div class="sect-body">
+          <div class="field">
+            <div class="slider-head">
+              <label for="stocks">Stocks</label>
+              <output id="stocksOut" for="stocks">60%</output>
+            </div>
+            <input type="range" id="stocks" value="60" min="0" max="100" step="5">
+          </div>
+          <div class="field">
+            <div class="slider-head">
+              <label for="bonds">Bonds</label>
+              <output id="bondsOut" for="bonds">30%</output>
+            </div>
+            <input type="range" id="bonds" value="30" min="0" max="100" step="5">
+            <div class="alloc-bar" aria-hidden="true">
+              <span class="s" id="allocS"></span><span class="b" id="allocB"></span><span class="c" id="allocC"></span>
+            </div>
+            <div class="alloc-legend">
+              <span class="key"><span class="swatch" style="background:var(--alloc-stocks)"></span>Stocks</span>
+              <span class="key"><span class="swatch" style="background:var(--alloc-bonds)"></span>Bonds</span>
+              <span class="key"><span class="swatch" style="background:var(--alloc-cash)"></span>Cash <span class="mono" id="cashOut">10%</span></span>
+            </div>
+          </div>
+          <div class="field">
+            <label for="fee">Annual fee / drag %</label>
+            <input type="number" id="fee" value="0.20" min="0" max="3" step="0.05">
+          </div>
+        </div>
+      </details>
+
+      <details class="sect">
+        <summary>Research &amp; engine</summary>
+        <div class="sect-body">
+          <div class="field">
+            <label for="retMode">Stock return assumption</label>
+            <select id="retMode">
+              <option value="plan" selected>Planning: 6.8% real, 17.2% SD (conservative forward)</option>
+              <option value="arith">Research: 7.8% real, 18% SD (historical arithmetic)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="dist">Return distribution</label>
+            <select id="dist">
+              <option value="normal" selected>Normal (advisor-standard)</option>
+              <option value="t">Student-t, df 5 (fat tails, research)</option>
+            </select>
+          </div>
+        </div>
+      </details>
+
+      <p class="blend-note">Blended real return <span class="mono" id="blendMu">&mdash;</span> &middot; volatility <span class="mono" id="blendSigma">&mdash;</span> per year, after fees</p>
 
       <button type="button" class="reroll" id="reroll">&#8635; Re-roll the 1,000 trials</button>
     </form>
@@ -379,14 +542,17 @@
           <div class="hero-side">
             <div class="stat"><div class="v" id="statTrials">&mdash;</div><div class="k" id="statTrialsK">trials kept money to the end</div></div>
             <div class="stat"><div class="v" id="statMedianEnd">&mdash;</div><div class="k">median balance at the end</div></div>
+            <div class="stat"><div class="v" id="statFunded">&mdash;</div><div class="k">90% of trials stay funded through this age</div></div>
+            <div class="stat"><div class="v" id="statCuts">&mdash;</div><div class="k" id="statCutsK">of trials cut spending at least once</div></div>
             <div class="stat"><div class="v" id="statFailAge">&mdash;</div><div class="k" id="statFailAgeK">typical depletion age in failed trials</div></div>
           </div>
         </div>
+        <p class="hero-note">Treat this as a conversation number, not a pass/fail grade &mdash; many advisors consider roughly 75&ndash;90% a workable planning band, and a plan with flexible spending can run lower safely.</p>
       </section>
 
       <section class="panel">
         <div class="chart-head">
-          <p class="eyebrow" style="margin:0">Portfolio value over time <span style="text-transform:none;letter-spacing:0">(today's dollars)</span></p>
+          <p class="eyebrow" style="margin:0">Portfolio value over time <span style="text-transform:none;letter-spacing:0">(today's dollars, all accounts)</span></p>
           <div class="legend">
             <span class="key"><span class="line-key"></span>Median</span>
             <span class="key"><span class="band-key" style="background:var(--band-inner)"></span>25th&ndash;75th pct</span>
@@ -394,24 +560,49 @@
           </div>
         </div>
         <div class="chart-box" id="chartBox">
-          <svg id="fanChart" viewBox="0 0 880 380" role="img" aria-label="Fan chart of simulated portfolio value by age, showing the median path and the 10th to 90th percentile range"></svg>
+          <svg id="fanChart" viewBox="0 0 880 380" role="img" aria-label="Fan chart of simulated total portfolio value by age, showing the median path and the 10th to 90th percentile range"></svg>
           <div class="tooltip" id="chartTip"></div>
         </div>
-        <p class="footnote">The shaded fan is the spread across all 1,000 trials at each age &mdash; the top edge is the 90th-percentile (best-decile) path, the bottom edge the 10th-percentile (worst-decile) path. Where the bottom edge touches zero, at least 10% of trials have run out of money.</p>
+        <p class="footnote">The shaded fan is the spread across all 1,000 trials at each age &mdash; the top edge is the 90th-percentile path, the bottom edge the 10th-percentile path. Where the bottom edge touches zero, at least 10% of trials have run out of money.</p>
+      </section>
+
+      <section class="panel">
+        <p class="eyebrow">Stress tests</p>
+        <div class="table-scroll">
+          <table class="stress" id="stressTable">
+            <thead><tr><th>Scenario</th><th>Result</th><th>vs. base</th></tr></thead>
+            <tbody id="stressBody"><tr><td colspan="3" style="color:var(--muted)">Running&hellip;</td></tr></tbody>
+          </table>
+        </div>
+        <p class="footnote">Historical replays are single deterministic paths: the named sequence of approximate real returns hits in your first retirement years, with expected returns before and after &mdash; they show sequence-of-returns risk, not probabilities. The correlation and Social Security rows re-run all 1,000 trials.</p>
       </section>
 
       <section class="panel">
         <p class="eyebrow">What moves the odds</p>
         <div class="table-scroll">
           <table class="sens" id="sensTable">
-            <caption>Success rate out of 1,000 trials for each combination. Green &ge; 85%, amber 70&ndash;84%, red &lt; 70%. The outlined cell is your current plan.</caption>
+            <caption>Success rate out of 1,000 trials for each combination. Green &ge; 85%, amber 70&ndash;84%, red &lt; 70%. The outlined cell is your current plan. Varies base spending only; the healthcare line is unchanged.</caption>
           </table>
         </div>
       </section>
 
       <section class="panel assumptions">
-        <h2>Assumptions</h2>
-        <p>All figures are real (inflation-adjusted), so results read in today's dollars. Annual returns are drawn from normal distributions calibrated to long-run U.S. history: stocks <span class="mono">6.8%</span> mean, <span class="mono">17.2%</span> standard deviation; bonds <span class="mono">2.0%</span> / <span class="mono">6.5%</span>; cash <span class="mono">0.5%</span> / <span class="mono">1.0%</span>; stock&ndash;bond correlation <span class="mono">0.10</span>. Savings are added and withdrawals taken at the end of each year; the allocation is rebalanced annually. Social Security is treated as inflation-adjusted income from the claiming age on &mdash; it offsets spending in retirement, adds to savings if claimed while still working, and any surplus over spending is reinvested. With a spending cut set, spending drops by that percentage in any year the portfolio return is negative and returns to normal after positive years; a trial that runs dry stays failed even if benefits continue. Trials are seeded deterministically from your inputs, so the same plan always shows the same result &mdash; use re-roll to see sampling variation. This is an educational model, not financial advice.</p>
+        <h2>Assumptions &amp; honesty notes</h2>
+        <p><strong>Educational model, not financial advice.</strong> Everything is real (inflation-adjusted), so results read in today's dollars.</p>
+        <h3>Returns</h3>
+        <p>Annual returns are drawn iid from a normal distribution (or Student-t in research mode). The planning default for stocks is <span class="mono">6.8%</span> real mean / <span class="mono">17.2%</span> SD &mdash; a deliberately conservative forward capital-market assumption, below the roughly <span class="mono">7.8%</span> historical arithmetic mean of U.S. equities, which is available as a research toggle. Bonds <span class="mono">2.0%</span> / <span class="mono">6.5%</span>; cash <span class="mono">0.5%</span> / <span class="mono">1.0%</span> (stylized low-vol); stock&ndash;bond correlation <span class="mono">0.10</span> in the base, <span class="mono">0.40</span> in the stress row. The annual fee is subtracted from returns before cash flows. iid draws understate long slumps and momentum; the historical replays exist to show what iid sampling hides.</p>
+        <h3>Taxes &amp; accounts</h3>
+        <p>Three buckets (taxable, tax-deferred, Roth) share one allocation and rebalance annually. Withdrawals are grossed up for tax: deferred at your ordinary rate, taxable at your capital-gains rate assuming <span class="mono">50%</span> of each withdrawal is gain (basis is not tracked), Roth tax-free. RMDs start at <span class="mono">73</span> or <span class="mono">75</span> by birth year (SECURE 2.0, computed automatically) using the Uniform Lifetime Table; net RMD proceeds beyond spending are reinvested in taxable. Real tax brackets are nominal and progressive; flat rates in a real model are an approximation.</p>
+        <h3>Income &amp; spending</h3>
+        <p>Social Security is a real annuity from the claiming age; the model assumes full CPI-W COLA, and CPI-W does not perfectly match retiree household inflation. The optional trim scenario multiplies benefits by <span class="mono">0.85</span> from a chosen year. For couples, the survivor keeps the larger check (once past their own claiming age &mdash; an approximation) and spending falls to the survivor factor. Guardrails cut spending by the slider amount when the current withdrawal rate breaches 120% of its starting level and restore below 80%; cuts are sticky until recovery and never take spending below <span class="mono">70%</span> of plan. Because guardrails adapt, ruin gets rare &mdash; read the &ldquo;trials that cut spending&rdquo; stat alongside the success rate. The smile option trims real spending 1%/yr past the chosen age. Healthcare is a flat extra line from 65 growing faster than CPI &mdash; IRMAA brackets are not modeled. Cash flows land at year-end, which is slightly optimistic.</p>
+        <h3>Known optimistic simplifications</h3>
+        <ul>
+          <li>No long-term-care shock is modeled by default.</li>
+          <li>Taxes are stylized flat rates; no state tax, no bracket creep, no Social Security benefit taxation.</li>
+          <li>Returns are iid; sequence clusters worse in real history than in these draws.</li>
+          <li>Deaths occur exactly at the plan-to ages rather than randomly.</li>
+        </ul>
+        <p>Trials are seeded deterministically from your inputs, so the same plan always shows the same result &mdash; use re-roll to see sampling variation. Historical replay data are approximate real total returns.</p>
       </section>
 
     </div>
@@ -422,16 +613,35 @@
 (function () {
   "use strict";
 
-  // ---------- asset model (real annual returns) ----------
-  var ASSETS = {
-    stocks: { mu: 0.068, sigma: 0.172 },
-    bonds:  { mu: 0.020, sigma: 0.065 },
-    cash:   { mu: 0.005, sigma: 0.010 }
-  };
-  var RHO_SB = 0.10; // stock\u2013bond correlation
+  // ---------- constants ----------
+  var BASE_YEAR = 2026;
   var TRIALS = 1000;
+  var MU_C = 0.005, SIG_C = 0.010;
+  var MU_B = 0.020, SIG_B = 0.065;
+  var GAINS_FRAC = 0.5;           // assumed gain share of taxable withdrawals
+  var GUARD_CEIL = 1.2, GUARD_FLOOR = 0.8, CUT_FLOOR = 0.7; // cuts never take spending below 70% of plan
+  var ULT = { 73:26.5, 74:25.5, 75:24.6, 76:23.7, 77:22.9, 78:22.0, 79:21.1, 80:20.2,
+              81:19.4, 82:18.5, 83:17.7, 84:16.8, 85:16.0, 86:15.2, 87:14.4, 88:13.7,
+              89:12.9, 90:12.2, 91:11.5, 92:10.8, 93:10.1, 94:9.5, 95:8.9, 96:8.4,
+              97:7.8, 98:7.3, 99:6.8, 100:6.4, 101:6.0, 102:5.6, 103:5.2, 104:4.9,
+              105:4.6, 106:4.3, 107:4.1, 108:3.9, 109:3.7, 110:3.5 };
+  function rmdDivisor(age) { return ULT[Math.min(110, age)] || 26.5; }
 
-  // ---------- seeded RNG + gaussians ----------
+  // Approximate REAL total returns for named replay windows.
+  var REPLAYS = [
+    { name: "Retire into 1966\u201382 stagflation", years: "17 yrs",
+      s: [-0.131,0.204,0.061,-0.138,-0.015,0.107,0.151,-0.215,-0.346,0.283,0.180,-0.130,-0.022,0.045,0.177,-0.127,0.171],
+      b: [0.002,-0.045,-0.013,-0.105,0.106,0.063,-0.006,-0.046,-0.092,-0.031,0.106,-0.069,-0.094,-0.128,-0.147,-0.064,0.353],
+      c: [0.013,0.012,0.005,0.004,0.009,0.011,0.004,-0.017,-0.038,-0.010,0.002,-0.015,-0.017,-0.026,-0.012,0.053,0.065] },
+    { name: "Retire into 2000\u201302 dot-com bust", years: "3 yrs",
+      s: [-0.121,-0.133,-0.239], b: [0.129,0.039,0.124], c: [0.024,0.022,-0.008] },
+    { name: "2008-style crash in year one", years: "1 yr",
+      s: [-0.370], b: [0.051], c: [0.013] },
+    { name: "2022-style rate shock in year one", years: "1 yr",
+      s: [-0.231], b: [-0.183], c: [-0.047] }
+  ];
+
+  // ---------- seeded RNG + distributions ----------
   function mulberry32(a) {
     return function () {
       a |= 0; a = a + 0x6D2B79F5 | 0;
@@ -451,65 +661,156 @@
       return u * m;
     };
   }
+  var T_SCALE = Math.sqrt(3 / 5); // unit-variance scaling for t(5)
+  function makeDraw(p, rand) {
+    var gauss = gaussianSource(rand);
+    var rootR = Math.sqrt(1 - p.rho * p.rho);
+    function std() {
+      if (p.dist === "t") {
+        var z = gauss(), g = 0;
+        for (var i = 0; i < 5; i++) { var x = gauss(); g += x * x; }
+        return z / Math.sqrt(g / 5) * T_SCALE;
+      }
+      return gauss();
+    }
+    return function () {
+      var zs = std(), zb = std(), zc = std();
+      return { s: p.muS + p.sigS * zs,
+               b: MU_B + SIG_B * (p.rho * zs + rootR * zb),
+               c: MU_C + SIG_C * zc };
+    };
+  }
   function hashInputs(p, roll) {
-    var s = [p.curAge, p.retAge, p.planAge, p.portfolio, p.savings, p.spend, p.ss, p.ssAge, p.flexCut, p.ws, p.wb, roll].join("|");
+    var s = [p.curAge, p.retAge, p.planAge, p.joint, p.spAge, p.spPlanAge, p.survFactor,
+             p.taxable, p.deferred, p.roth, p.savings, p.saveTo, p.ord, p.cg, p.order,
+             p.ss, p.ssAge, p.spSS, p.spSSAge, p.haircutOn, p.haircutYear,
+             p.spend, p.rule, p.cut, p.smileOn, p.smileAge, p.hcAmt, p.hcGrow,
+             p.ws, p.wb, p.fee, p.muS, p.dist, roll].join("|");
     var h = 2166136261;
     for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
     return h >>> 0;
   }
 
-  // ---------- core simulation ----------
-  // Returns { successRate, paths: perYear percentile arrays, endBalances, failAges }
+  // ---------- plan helpers ----------
+  function spouseAgeAt(p, y) { return p.spAge + y; }
+  function ssIncome(p, y, age) {
+    var f = (p.haircutOn && (BASE_YEAR + y) >= p.haircutYear) ? 0.85 : 1;
+    var youAlive = age <= p.planAge;
+    if (!p.joint) return (youAlive && age >= p.ssAge) ? p.ss * f : 0;
+    var spAlive = spouseAgeAt(p, y) <= p.spPlanAge;
+    if (youAlive && spAlive) {
+      var inc = 0;
+      if (age >= p.ssAge) inc += p.ss;
+      if (spouseAgeAt(p, y) >= p.spSSAge) inc += p.spSS;
+      return inc * f;
+    }
+    var larger = Math.max(p.ss, p.spSS);
+    if (youAlive) return age >= p.ssAge ? larger * f : 0;
+    if (spAlive) return spouseAgeAt(p, y) >= p.spSSAge ? larger * f : 0;
+    return 0;
+  }
+  function intendedSpend(p, y, age) {
+    var base = p.spend;
+    if (p.smileOn && age > p.smileAge) base *= Math.pow(0.99, age - p.smileAge);
+    var hc = age >= 65 ? p.hcAmt * Math.pow(1 + p.hcGrow, age - 65) : 0;
+    var s = base + hc;
+    if (p.joint) {
+      var youAlive = age <= p.planAge;
+      var spAlive = spouseAgeAt(p, y) <= p.spPlanAge;
+      if (!youAlive || !spAlive) s *= p.survFactor;
+    }
+    return s;
+  }
+
+  // ---------- one path (shared by Monte Carlo and replays) ----------
+  function runPath(p, nextR, path) {
+    var B = { t: p.taxable, d: p.deferred, r: p.roth };
+    var mult = 1, initWR = null, failedAt = -1, everCut = false;
+    var years = p.endAge - p.curAge;
+    if (path) path[0] = B.t + B.d + B.r;
+    for (var y = 1; y <= years; y++) {
+      var r = nextR(y); // always consume randomness so trials stay aligned
+      var age = p.curAge + y;
+      if (failedAt < 0) {
+        var rp = p.ws * r.s + p.wb * r.b + p.wc * r.c - p.fee;
+        B.t *= 1 + rp; B.d *= 1 + rp; B.r *= 1 + rp;
+        var ss = ssIncome(p, y, age);
+        if (age <= p.retAge) {
+          B[p.saveTo] += p.savings;
+          B.t += ss;
+        } else {
+          var intended = intendedSpend(p, y, age);
+          var total = B.t + B.d + B.r;
+          var spendNow;
+          if (p.rule === "guard") {
+            if (initWR === null) initWR = total > 0 ? intended / total : 1;
+            var wr = total > 0 ? intended / total : Infinity;
+            if (wr > initWR * GUARD_CEIL) { mult = Math.max(CUT_FLOOR, mult * (1 - p.cut)); if (mult < 1) everCut = true; }
+            else if (wr < initWR * GUARD_FLOOR && mult < 1) mult = Math.min(1, mult / (1 - p.cut));
+            spendNow = intended * mult;
+          } else if (p.rule === "simple") {
+            if (rp < 0 && p.cut > 0) everCut = true;
+            spendNow = intended * (rp < 0 ? 1 - p.cut : 1);
+          } else {
+            spendNow = intended;
+          }
+          var need = spendNow - ss;
+          if (need <= 0) {
+            B.t += -need;
+          } else {
+            if (age >= p.rmdAge && B.d > 0) {
+              var rmd = B.d / rmdDivisor(age);
+              B.d -= rmd;
+              var netR = rmd * (1 - p.ord);
+              if (netR >= need) { B.t += netR - need; need = 0; }
+              else need -= netR;
+            }
+            for (var i = 0; i < p.order.length && need > 1e-9; i++) {
+              var k = p.order[i];
+              var rate = k === "t" ? GAINS_FRAC * p.cg : (k === "d" ? p.ord : 0);
+              var avail = B[k] * (1 - rate);
+              if (avail >= need) { B[k] -= need / (1 - rate); need = 0; }
+              else { need -= avail; B[k] = 0; }
+            }
+            if (need > 1e-9) { B.t = B.d = B.r = 0; failedAt = age; }
+          }
+        }
+      }
+      if (path) path[y] = failedAt < 0 ? B.t + B.d + B.r : 0;
+    }
+    return { end: failedAt < 0 ? B.t + B.d + B.r : 0, failedAt: failedAt, everCut: everCut };
+  }
+
+  // ---------- Monte Carlo ----------
   function simulate(p, seed, trials, keepPaths) {
-    var years = p.planAge - p.curAge;
+    var years = p.endAge - p.curAge;
     var rand = mulberry32(seed);
-    var gauss = gaussianSource(rand);
-    var ws = p.ws, wb = p.wb, wc = 1 - ws - wb;
-    var rootSB = Math.sqrt(1 - RHO_SB * RHO_SB);
+    var draw = makeDraw(p, rand);
+    var nextR = function () { return draw(); };
     var successes = 0;
-    var byYear = null;
+    var byYear = null, endBalances = null, failAges = [], fundedList = new Array(trials);
     if (keepPaths) {
       byYear = new Array(years + 1);
       for (var y = 0; y <= years; y++) byYear[y] = new Float64Array(trials);
+      endBalances = new Float64Array(trials);
     }
-    var endBalances = keepPaths ? new Float64Array(trials) : null;
-    var failAges = keepPaths ? [] : null;
-
+    var pathBuf = keepPaths ? new Float64Array(years + 1) : null;
+    var cutCount = 0;
     for (var t = 0; t < trials; t++) {
-      var bal = p.portfolio;
-      if (keepPaths) byYear[0][t] = bal;
-      var failedAt = -1;
-      for (var y2 = 1; y2 <= years; y2++) {
-        var age = p.curAge + y2;
-        if (bal > 0) {
-          var zs = gauss(), zb0 = gauss(), zc = gauss();
-          var rs = ASSETS.stocks.mu + ASSETS.stocks.sigma * zs;
-          var rb = ASSETS.bonds.mu + ASSETS.bonds.sigma * (RHO_SB * zs + rootSB * zb0);
-          var rc = ASSETS.cash.mu + ASSETS.cash.sigma * zc;
-          var rp = ws * rs + wb * rb + wc * rc;
-          bal *= (1 + rp);
-          var income = age >= p.ssAge ? p.ss : 0;
-          if (age <= p.retAge) {
-            bal += p.savings + income;
-          } else {
-            var spendNow = rp < 0 ? p.spend * (1 - p.flexCut) : p.spend;
-            bal -= spendNow - income; // surplus benefit reinvests
-          }
-          if (bal <= 0) { bal = 0; if (failedAt < 0) failedAt = age; }
-        } else {
-          // stay depleted, but keep RNG consumption identical across trials
-          gauss(); gauss(); gauss();
-        }
-        if (keepPaths) byYear[y2][t] = bal;
-      }
-      if (bal > 0) successes++;
+      var res = runPath(p, nextR, pathBuf);
+      if (res.failedAt < 0) successes++;
+      if (res.everCut) cutCount++;
+      fundedList[t] = res.failedAt < 0 ? p.endAge + 1 : res.failedAt;
       if (keepPaths) {
-        endBalances[t] = bal;
-        if (failedAt > 0) failAges.push(failedAt);
+        for (var y2 = 0; y2 <= years; y2++) byYear[y2][t] = pathBuf[y2];
+        endBalances[t] = res.end;
+        if (res.failedAt > 0) failAges.push(res.failedAt);
       }
     }
-
-    var out = { successRate: successes / trials, successes: successes };
+    var out = { successRate: successes / trials, successes: successes, cutShare: cutCount / trials };
+    fundedList.sort(function (a, b) { return a - b; });
+    var f10 = fundedList[Math.floor(0.10 * (trials - 1))];
+    out.fundedTo90 = f10 > p.endAge ? null : f10 - 1; // null = full horizon
     if (keepPaths) {
       var pct = function (sorted, q) {
         var idx = q * (sorted.length - 1);
@@ -533,14 +834,21 @@
     return out;
   }
 
+  // ---------- deterministic replay ----------
+  function replay(p, scenario) {
+    var nextR = function (y) {
+      var i = (p.curAge + y) - (p.retAge + 1);
+      if (i >= 0 && i < scenario.s.length) return { s: scenario.s[i], b: scenario.b[i], c: scenario.c[i] };
+      return { s: p.muS, b: MU_B, c: MU_C };
+    };
+    return runPath(p, nextR, null);
+  }
+
   // ---------- formatting ----------
   function fmtMoney(v) {
     if (v >= 1e6) return "$" + (v / 1e6).toFixed(v >= 10e6 ? 1 : 2) + "M";
     if (v >= 1e3) return "$" + Math.round(v / 1e3) + "k";
     return "$" + Math.round(v);
-  }
-  function fmtMoneyFull(v) {
-    return "$" + Math.round(v).toLocaleString("en-US");
   }
   function niceCeil(v) {
     var mag = Math.pow(10, Math.floor(Math.log10(v)));
@@ -549,44 +857,72 @@
     return step * mag;
   }
 
-  // ---------- read inputs ----------
+  // ---------- inputs ----------
   var el = function (id) { return document.getElementById(id); };
   var rollCount = 0;
 
   function readParams() {
     var curAge = Math.max(18, Math.min(80, Math.round(+el("curAge").value || 45)));
-    var retAge = Math.round(+el("retAge").value || 65);
-    var planAge = Math.round(+el("planAge").value || 95);
-    retAge = Math.max(curAge + 1, Math.min(90, retAge));
-    planAge = Math.max(retAge + 1, Math.min(110, planAge));
+    var retAge = Math.max(curAge + 1, Math.min(90, Math.round(+el("retAge").value || 65)));
+    var planAge = Math.max(retAge + 1, Math.min(110, Math.round(+el("planAge").value || 95)));
+    var joint = el("joint").checked;
+    var spAge = Math.max(18, Math.min(100, Math.round(+el("spAge").value || 45)));
+    var spPlanAge = Math.max(spAge + 1, Math.min(110, Math.round(+el("spPlanAge").value || 90)));
     var s = Math.max(0, Math.min(100, Math.round(+el("stocks").value)));
     var b = Math.max(0, Math.min(100 - s, Math.round(+el("bonds").value)));
     if (+el("bonds").value !== b) el("bonds").value = b;
+    var retMode = el("retMode").value;
+    var endAge = planAge;
+    if (joint) endAge = Math.max(planAge, curAge + (spPlanAge - spAge));
     return {
-      curAge: curAge, retAge: retAge, planAge: planAge,
-      portfolio: Math.max(0, +el("portfolio").value || 0),
+      curAge: curAge, retAge: retAge, planAge: planAge, endAge: endAge,
+      joint: joint, spAge: spAge, spPlanAge: spPlanAge,
+      survFactor: Math.max(50, Math.min(100, Math.round(+el("survFactor").value))) / 100,
+      taxable: Math.max(0, +el("taxable").value || 0),
+      deferred: Math.max(0, +el("deferred").value || 0),
+      roth: Math.max(0, +el("roth").value || 0),
       savings: Math.max(0, +el("savings").value || 0),
-      spend: Math.max(0, +el("spend").value || 0),
+      saveTo: el("saveTo").value,
+      ord: Math.max(0, Math.min(50, +el("ord").value || 0)) / 100,
+      cg: Math.max(0, Math.min(40, +el("cg").value || 0)) / 100,
+      order: el("wOrder").value,
+      rmdAge: (BASE_YEAR - curAge) >= 1960 ? 75 : 73,
       ss: Math.max(0, +el("ss").value || 0),
       ssAge: Math.max(62, Math.min(70, Math.round(+el("ssAge").value || 67))),
-      flexCut: Math.max(0, Math.min(30, Math.round(+el("flex").value))) / 100,
-      ws: s / 100, wb: b / 100
+      spSS: Math.max(0, +el("spSS").value || 0),
+      spSSAge: Math.max(62, Math.min(70, Math.round(+el("spSSAge").value || 67))),
+      haircutOn: el("haircut").checked,
+      haircutYear: Math.max(2026, Math.min(2060, Math.round(+el("haircutYear").value || 2034))),
+      spend: Math.max(0, +el("spend").value || 0),
+      rule: el("rule").value,
+      cut: Math.max(0, Math.min(30, Math.round(+el("flex").value))) / 100,
+      smileOn: el("smile").checked,
+      smileAge: Math.max(65, Math.min(90, Math.round(+el("smileAge").value || 75))),
+      hcAmt: Math.max(0, +el("hc").value || 0),
+      hcGrow: Math.max(0, Math.min(5, +el("hcGrow").value || 0)) / 100,
+      ws: s / 100, wb: b / 100, wc: (100 - s - b) / 100,
+      fee: Math.max(0, Math.min(3, +el("fee").value || 0)) / 100,
+      muS: retMode === "arith" ? 0.078 : 0.068,
+      sigS: retMode === "arith" ? 0.180 : 0.172,
+      retMode: retMode,
+      dist: el("dist").value,
+      rho: 0.10
     };
   }
 
-  function updateAllocUI(p) {
-    var wc = 1 - p.ws - p.wb;
+  function updateControlUI(p) {
     el("stocksOut").textContent = Math.round(p.ws * 100) + "%";
     el("bondsOut").textContent = Math.round(p.wb * 100) + "%";
-    el("cashOut").textContent = Math.round(wc * 100) + "%";
+    el("cashOut").textContent = Math.round(p.wc * 100) + "%";
     el("allocS").style.width = (p.ws * 100) + "%";
     el("allocB").style.width = (p.wb * 100) + "%";
-    el("allocC").style.width = (wc * 100) + "%";
-    el("flexOut").textContent = Math.round(p.flexCut * 100) + "%";
-    var mu = p.ws * ASSETS.stocks.mu + p.wb * ASSETS.bonds.mu + wc * ASSETS.cash.mu;
-    var varP = Math.pow(p.ws * ASSETS.stocks.sigma, 2) + Math.pow(p.wb * ASSETS.bonds.sigma, 2) +
-               Math.pow(wc * ASSETS.cash.sigma, 2) +
-               2 * p.ws * ASSETS.stocks.sigma * p.wb * ASSETS.bonds.sigma * RHO_SB;
+    el("allocC").style.width = (p.wc * 100) + "%";
+    el("flexOut").textContent = Math.round(p.cut * 100) + "%";
+    el("survOut").textContent = Math.round(p.survFactor * 100) + "%";
+    el("controls").classList.toggle("joint", p.joint);
+    var mu = p.ws * p.muS + p.wb * MU_B + p.wc * MU_C - p.fee;
+    var varP = Math.pow(p.ws * p.sigS, 2) + Math.pow(p.wb * SIG_B, 2) + Math.pow(p.wc * SIG_C, 2) +
+               2 * p.ws * p.sigS * p.wb * SIG_B * p.rho;
     el("blendMu").textContent = (mu * 100).toFixed(1) + "%";
     el("blendSigma").textContent = (Math.sqrt(varP) * 100).toFixed(1) + "%";
   }
@@ -594,9 +930,9 @@
   // ---------- hero ----------
   function statusFor(rate) {
     var pctVal = rate * 100;
-    if (pctVal >= 85) return { cls: "good", label: "On track", color: "var(--status-good)", text: "var(--status-good-text)" };
-    if (pctVal >= 70) return { cls: "warn", label: "Borderline", color: "var(--status-warn)", text: "var(--status-warn-text)" };
-    return { cls: "crit", label: "At risk", color: "var(--status-crit)", text: "var(--status-crit-text)" };
+    if (pctVal >= 85) return { label: "On track", color: "var(--status-good)", text: "var(--status-good-text)" };
+    if (pctVal >= 70) return { label: "Borderline", color: "var(--status-warn)", text: "var(--status-warn-text)" };
+    return { label: "At risk", color: "var(--status-crit)", text: "var(--status-crit-text)" };
   }
 
   function renderHero(res, p) {
@@ -609,11 +945,19 @@
     chip.style.color = st.text;
     el("meterFill").style.width = pctVal + "%";
     el("statTrials").textContent = res.successes.toLocaleString("en-US") + " / 1,000";
-    el("statTrialsK").textContent = "trials kept money to age " + p.planAge;
+    el("statTrialsK").textContent = "trials kept money to age " + p.endAge;
     el("statMedianEnd").textContent = fmtMoney(res.medianEnd);
+    el("statFunded").textContent = res.fundedTo90 === null ? "full horizon" : "age " + res.fundedTo90;
+    if (p.rule === "fixed" || p.cut === 0) {
+      el("statCuts").textContent = "\u2014";
+      el("statCutsK").textContent = "spending never adjusts under this rule";
+    } else {
+      el("statCuts").textContent = Math.round(res.cutShare * 100) + "%";
+      el("statCutsK").textContent = "of trials cut spending at least once (floor: 70% of plan)";
+    }
     if (res.medianFailAge) {
       el("statFailAge").textContent = "age " + res.medianFailAge;
-      el("statFailAgeK").textContent = "typical depletion age in the " + (1000 - res.successes) + " failed trials";
+      el("statFailAgeK").textContent = "typical depletion age in the " + (TRIALS - res.successes) + " failed trials";
     } else {
       el("statFailAge").textContent = "\u2014";
       el("statFailAgeK").textContent = "no trial ran out of money";
@@ -627,7 +971,7 @@
     var svg = el("fanChart");
     var W = 880, H = 380, mL = 62, mR = 58, mT = 16, mB = 34;
     var iw = W - mL - mR, ih = H - mT - mB;
-    var years = p.planAge - p.curAge;
+    var years = p.endAge - p.curAge;
     var yMax = niceCeil(Math.max.apply(null, res.p90) * 1.05 || 1);
     var x = function (i) { return mL + (i / years) * iw; };
     var y = function (v) { return mT + ih - (v / yMax) * ih; };
@@ -641,7 +985,6 @@
       return n;
     }
 
-    // gridlines + y labels
     var yTicks = 5;
     for (var g = 0; g <= yTicks; g++) {
       var val = yMax * g / yTicks;
@@ -650,8 +993,7 @@
       var lbl = add("text", { x: mL - 8, y: yy + 4, "text-anchor": "end", "class": "axis-text" });
       lbl.textContent = fmtMoney(val);
     }
-    // x labels every 5 years of age
-    for (var age = Math.ceil(p.curAge / 5) * 5; age <= p.planAge; age += 5) {
+    for (var age = Math.ceil(p.curAge / 5) * 5; age <= p.endAge; age += 5) {
       var xi = x(age - p.curAge);
       add("line", { x1: xi, x2: xi, y1: mT + ih, y2: mT + ih + 4, stroke: "var(--baseline)", "stroke-width": 1 });
       var xl = add("text", { x: xi, y: mT + ih + 18, "text-anchor": "middle", "class": "axis-text" });
@@ -676,14 +1018,12 @@
     add("path", { d: bandPath(res.p75, res.p25), fill: "var(--band-inner)", stroke: "none" });
     add("path", { d: linePath(res.p50), fill: "none", stroke: "var(--accent)", "stroke-width": 2, "stroke-linejoin": "round" });
 
-    // retirement marker
     var rx = x(p.retAge - p.curAge);
     add("line", { x1: rx, x2: rx, y1: mT, y2: mT + ih, stroke: "var(--baseline)", "stroke-width": 1, "stroke-dasharray": "3 4" });
     var rl = add("text", { x: rx + 5, y: mT + 12, "class": "axis-text" });
     rl.textContent = "retire " + p.retAge;
 
-    // Social Security marker
-    if (p.ss > 0 && p.ssAge > p.curAge && p.ssAge < p.planAge) {
+    if (p.ss > 0 && p.ssAge > p.curAge && p.ssAge < p.endAge) {
       var sxp = x(p.ssAge - p.curAge);
       add("line", { x1: sxp, x2: sxp, y1: mT, y2: mT + ih, stroke: "var(--baseline)", "stroke-width": 1, "stroke-dasharray": "1 4" });
       var overlapsRetire = Math.abs(p.ssAge - p.retAge) * (iw / years) < 62;
@@ -691,23 +1031,17 @@
       sl.textContent = "SS " + p.ssAge;
     }
 
-    // selective direct labels at right edge
-    function endLabel(series, text, dy) {
-      var t = add("text", { x: mL + iw + 6, y: y(series[years]) + (dy || 4), "class": "direct-label", fill: "var(--accent-ink)" });
+    function endLabel(series, text) {
+      var t = add("text", { x: mL + iw + 6, y: y(series[years]) + 4, "class": "direct-label", fill: "var(--accent-ink)" });
       t.textContent = text;
       return t;
     }
-    var l90 = endLabel(res.p90, "90th");
-    var lMed = endLabel(res.p50, "median");
-    var l10 = endLabel(res.p10, "10th");
-    // nudge collisions apart
-    var placed = [l90, lMed, l10];
+    var placed = [endLabel(res.p90, "90th"), endLabel(res.p50, "median"), endLabel(res.p10, "10th")];
     for (var q = 1; q < placed.length; q++) {
       var prev = +placed[q - 1].getAttribute("y"), cur = +placed[q].getAttribute("y");
       if (cur - prev < 13) placed[q].setAttribute("y", prev + 13);
     }
 
-    // crosshair
     var cross = add("line", { x1: 0, x2: 0, y1: mT, y2: mT + ih, stroke: "var(--baseline)", "stroke-width": 1, visibility: "hidden" });
     var dot = add("circle", { r: 4, fill: "var(--accent)", stroke: "var(--surface)", "stroke-width": 2, visibility: "hidden" });
 
@@ -757,13 +1091,55 @@
     svg.addEventListener("touchend", leave);
   }
 
+  // ---------- stress panel ----------
+  function stressPill(pctVal) {
+    var st = statusFor(pctVal / 100);
+    return '<span class="pill" style="color:' + st.text + '"><span class="dot" style="background:' + st.color + '"></span>' + pctVal + '%</span>';
+  }
+  function renderStress(p, seed, baseRate) {
+    var body = el("stressBody");
+    body.innerHTML = "";
+    var basePct = Math.round(baseRate * 100);
+    function row(name, resultHTML, deltaHTML) {
+      var tr = document.createElement("tr");
+      tr.innerHTML = "<td>" + name + "</td><td class=\"num\">" + resultHTML + "</td><td class=\"num delta\">" + deltaHTML + "</td>";
+      body.appendChild(tr);
+    }
+    // MC stresses
+    var pRho = Object.assign({}, p, { rho: 0.40 });
+    var rRho = simulate(pRho, seed ^ 0x5151, TRIALS, false);
+    var v1 = Math.round(rRho.successRate * 100);
+    row("Stock\u2013bond correlation 0.40", stressPill(v1), (v1 - basePct >= 0 ? "+" : "") + (v1 - basePct) + " pts");
+
+    if (p.haircutOn) {
+      row("Social Security \u00d7 0.85 from " + p.haircutYear, stressPill(basePct), "already in your base plan");
+    } else {
+      var pH = Object.assign({}, p, { haircutOn: true });
+      var rH = simulate(pH, seed ^ 0x8585, TRIALS, false);
+      var v2 = Math.round(rH.successRate * 100);
+      row("Social Security \u00d7 0.85 from " + p.haircutYear, stressPill(v2), (v2 - basePct >= 0 ? "+" : "") + (v2 - basePct) + " pts");
+    }
+    // deterministic replays
+    REPLAYS.forEach(function (sc) {
+      var r = replay(p, sc);
+      var resultHTML, delta;
+      if (r.failedAt < 0) {
+        resultHTML = "funded \u00b7 ends with " + fmtMoney(r.end);
+        delta = "single path, " + sc.years + " replay";
+      } else {
+        resultHTML = '<span class="pill" style="color:var(--status-crit-text)"><span class="dot" style="background:var(--status-crit)"></span>runs out at ' + r.failedAt + "</span>";
+        delta = "single path, " + sc.years + " replay";
+      }
+      row(sc.name, resultHTML, delta);
+    });
+  }
+
   // ---------- sensitivity table ----------
   function renderSensitivity(p, seed) {
     var ageOffsets = [-2, -1, 0, 1, 2].map(function (d) { return p.retAge + d; })
       .filter(function (a) { return a > p.curAge && a < p.planAge; });
     var spendFactors = [0.8, 0.9, 1.0, 1.1, 1.2];
     var table = el("sensTable");
-    // keep the caption node, rebuild the rest
     var caption = table.querySelector("caption");
     table.innerHTML = "";
     table.appendChild(caption);
@@ -775,9 +1151,7 @@
     hr.appendChild(corner);
     spendFactors.forEach(function (f) {
       var th = document.createElement("th");
-      var amt = Math.round(p.spend * f);
-      th.textContent = fmtMoney(amt) + "/yr";
-      if (f === 1) th.textContent += " (now)";
+      th.textContent = fmtMoney(Math.round(p.spend * f)) + "/yr" + (f === 1 ? " (now)" : "");
       hr.appendChild(th);
     });
     thead.appendChild(hr);
@@ -791,9 +1165,7 @@
       th.textContent = "age " + age + (age === p.retAge ? " (now)" : "");
       tr.appendChild(th);
       spendFactors.forEach(function (f) {
-        var q = { curAge: p.curAge, retAge: age, planAge: p.planAge, portfolio: p.portfolio,
-                  savings: p.savings, spend: p.spend * f, ss: p.ss, ssAge: p.ssAge,
-                  flexCut: p.flexCut, ws: p.ws, wb: p.wb };
+        var q = Object.assign({}, p, { retAge: age, spend: p.spend * f });
         var r = simulate(q, seed ^ (age * 131 + Math.round(f * 100)), TRIALS, false);
         var pctVal = Math.round(r.successRate * 100);
         var td = document.createElement("td");
@@ -811,21 +1183,27 @@
   var debounceTimer = null;
   function runAll() {
     var p = readParams();
-    updateAllocUI(p);
+    updateControlUI(p);
     var seed = hashInputs(p, rollCount);
     var res = simulate(p, seed, TRIALS, true);
     renderHero(res, p);
     renderChart(res, p);
-    // sensitivity is 25 extra full runs \u2014 let the main result paint first
-    setTimeout(function () { renderSensitivity(p, seed); }, 10);
+    setTimeout(function () { renderStress(p, seed, res.successRate); }, 10);
+    setTimeout(function () { renderSensitivity(p, seed); }, 30);
   }
   function schedule() {
     clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(runAll, 160);
+    debounceTimer = setTimeout(runAll, 180);
   }
 
-  ["curAge", "retAge", "planAge", "portfolio", "savings", "spend", "ss", "ssAge", "flex", "stocks", "bonds"].forEach(function (id) {
-    el(id).addEventListener("input", schedule);
+  ["curAge", "retAge", "planAge", "joint", "spAge", "spPlanAge", "survFactor",
+   "taxable", "deferred", "roth", "savings", "saveTo", "ord", "cg", "wOrder",
+   "ss", "ssAge", "spSS", "spSSAge", "haircut", "haircutYear",
+   "spend", "rule", "flex", "smile", "smileAge", "hc", "hcGrow",
+   "stocks", "bonds", "fee", "retMode", "dist"].forEach(function (id) {
+    var node = el(id);
+    node.addEventListener("input", schedule);
+    node.addEventListener("change", schedule);
   });
   el("reroll").addEventListener("click", function () { rollCount++; runAll(); });
 
