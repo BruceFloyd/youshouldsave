@@ -1,0 +1,835 @@
+<title>Glidepath</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --accent: #2a78d6;
+    --accent-ink: #1c5cab;
+    --band-outer: rgba(42,120,214,0.13);
+    --band-inner: rgba(42,120,214,0.27);
+    --alloc-stocks: #2a78d6;
+    --alloc-bonds: #eb6834;
+    --alloc-cash: #1baf7a;
+    --status-good: #0ca30c;
+    --status-good-text: #006300;
+    --status-warn: #fab219;
+    --status-warn-text: #7a5200;
+    --status-crit: #d03b3b;
+    --status-crit-text: #a32424;
+    --cell-good: rgba(12,163,12,0.13);
+    --cell-warn: rgba(250,178,25,0.18);
+    --cell-crit: rgba(208,59,59,0.13);
+    --input-bg: #ffffff;
+    --tooltip-bg: #0b0b0b;
+    --tooltip-ink: #ffffff;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --ink: #ffffff;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --baseline: #383835;
+      --border: rgba(255,255,255,0.10);
+      --accent: #3987e5;
+      --accent-ink: #6da7ec;
+      --band-outer: rgba(57,135,229,0.16);
+      --band-inner: rgba(57,135,229,0.32);
+      --alloc-stocks: #3987e5;
+      --alloc-bonds: #d95926;
+      --alloc-cash: #199e70;
+      --status-good: #0ca30c;
+      --status-good-text: #4cc94c;
+      --status-warn: #fab219;
+      --status-warn-text: #fab219;
+      --status-crit: #d03b3b;
+      --status-crit-text: #e66767;
+      --cell-good: rgba(12,163,12,0.18);
+      --cell-warn: rgba(250,178,25,0.16);
+      --cell-crit: rgba(208,59,59,0.20);
+      --input-bg: #232322;
+      --tooltip-bg: #fcfcfb;
+      --tooltip-ink: #0b0b0b;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --baseline: #383835;
+    --border: rgba(255,255,255,0.10);
+    --accent: #3987e5;
+    --accent-ink: #6da7ec;
+    --band-outer: rgba(57,135,229,0.16);
+    --band-inner: rgba(57,135,229,0.32);
+    --alloc-stocks: #3987e5;
+    --alloc-bonds: #d95926;
+    --alloc-cash: #199e70;
+    --status-good: #0ca30c;
+    --status-good-text: #4cc94c;
+    --status-warn: #fab219;
+    --status-warn-text: #fab219;
+    --status-crit: #d03b3b;
+    --status-crit-text: #e66767;
+    --cell-good: rgba(12,163,12,0.18);
+    --cell-warn: rgba(250,178,25,0.16);
+    --cell-crit: rgba(208,59,59,0.20);
+    --input-bg: #232322;
+    --tooltip-bg: #fcfcfb;
+    --tooltip-ink: #0b0b0b;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 40px 24px 72px; }
+
+  .masthead { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 8px; }
+  h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+  .masthead .tagline { color: var(--ink-2); font-size: 14px; max-width: 46ch; margin: 0; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace; }
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--muted); margin: 0 0 12px;
+  }
+
+  .layout { display: grid; grid-template-columns: 320px 1fr; gap: 24px; align-items: start; margin-top: 24px; }
+  @media (max-width: 920px) { .layout { grid-template-columns: 1fr; } }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px;
+  }
+
+  /* ---------- input rail ---------- */
+  .rail { display: flex; flex-direction: column; gap: 18px; position: sticky; top: 16px; }
+  @media (max-width: 920px) { .rail { position: static; } }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .field .hint { font-size: 12px; color: var(--muted); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  input[type="number"] {
+    width: 100%;
+    font: 500 14px "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+  input[type="number"]:focus-visible, input[type="range"]:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  .slider-head { display: flex; justify-content: space-between; align-items: baseline; }
+  .slider-head output {
+    font: 600 13px "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+  input[type="range"] { width: 100%; accent-color: var(--accent); margin: 2px 0 0; }
+  .alloc-bar {
+    display: flex; height: 10px; border-radius: 5px; overflow: hidden; gap: 2px;
+    background: var(--page); margin-top: 4px;
+  }
+  .alloc-bar span { height: 100%; }
+  .alloc-bar .s { background: var(--alloc-stocks); }
+  .alloc-bar .b { background: var(--alloc-bonds); }
+  .alloc-bar .c { background: var(--alloc-cash); }
+  .alloc-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 8px; font-size: 12px; color: var(--ink-2); }
+  .alloc-legend .key { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 9px; height: 9px; border-radius: 2px; display: inline-block; flex: none; }
+  .blend-note {
+    font-size: 12px; color: var(--ink-2);
+    border-top: 1px solid var(--grid); padding-top: 12px; margin-top: 2px;
+  }
+  .blend-note .mono { font-variant-numeric: tabular-nums; color: var(--ink); }
+  button.reroll {
+    font: 600 13px "IBM Plex Sans", system-ui, sans-serif;
+    color: var(--ink); background: var(--input-bg);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 9px 12px; cursor: pointer;
+  }
+  button.reroll:hover { border-color: var(--baseline); }
+
+  /* ---------- results ---------- */
+  .results { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+
+  .hero { display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: center; }
+  @media (max-width: 640px) { .hero { grid-template-columns: 1fr; } }
+  .hero-num {
+    font-size: 76px; font-weight: 700; line-height: 1; letter-spacing: -0.03em;
+    margin: 4px 0 0;
+  }
+  .hero-num small { font-size: 34px; font-weight: 600; color: var(--ink-2); letter-spacing: 0; }
+  .status-chip {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 13px; font-weight: 600; margin-top: 10px;
+  }
+  .status-chip .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+  .meter { position: relative; height: 8px; border-radius: 4px; background: var(--grid); margin-top: 14px; overflow: visible; }
+  .meter .fill { position: absolute; inset: 0 auto 0 0; border-radius: 4px; background: var(--accent); }
+  .meter .tick { position: absolute; top: -3px; bottom: -3px; width: 1px; background: var(--baseline); }
+  .meter-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 5px;
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace; }
+  .hero-side { display: grid; gap: 12px; align-content: center; }
+  .stat { border-left: 2px solid var(--grid); padding-left: 14px; }
+  .stat .v { font: 600 19px "IBM Plex Mono", ui-monospace, Menlo, monospace; font-variant-numeric: tabular-nums; }
+  .stat .k { font-size: 12px; color: var(--ink-2); }
+
+  /* ---------- chart ---------- */
+  .chart-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--ink-2); }
+  .legend .key { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .line-key { width: 16px; height: 2px; background: var(--accent); display: inline-block; }
+  .legend .band-key { width: 14px; height: 10px; border-radius: 2px; display: inline-block; }
+  .chart-box { position: relative; margin-top: 12px; }
+  .chart-box svg { display: block; width: 100%; height: auto; }
+  .tooltip {
+    position: absolute; pointer-events: none; z-index: 3; display: none;
+    background: var(--tooltip-bg); color: var(--tooltip-ink);
+    border-radius: 6px; padding: 8px 11px; font-size: 12px; line-height: 1.55;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    min-width: 148px;
+  }
+  .tooltip .t-age { font-weight: 700; margin-bottom: 2px; }
+  .tooltip .row { display: flex; justify-content: space-between; gap: 14px; }
+  .tooltip .row .val { font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace; font-variant-numeric: tabular-nums; }
+  .axis-text { font: 400 11px "IBM Plex Mono", ui-monospace, Menlo, monospace; fill: var(--muted); }
+  .direct-label { font: 600 11px "IBM Plex Mono", ui-monospace, Menlo, monospace; }
+  .footnote { font-size: 12px; color: var(--muted); margin: 14px 0 0; max-width: 78ch; }
+
+  /* ---------- sensitivity table ---------- */
+  .table-scroll { overflow-x: auto; margin-top: 12px; }
+  table.sens { border-collapse: collapse; width: 100%; min-width: 560px; }
+  table.sens caption { text-align: left; font-size: 12px; color: var(--muted); caption-side: bottom; padding-top: 10px; }
+  table.sens th, table.sens td {
+    font-size: 13px; text-align: center; padding: 9px 10px;
+    border: 1px solid var(--grid);
+  }
+  table.sens thead th {
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    font-size: 11px; font-weight: 600; color: var(--ink-2);
+    font-variant-numeric: tabular-nums; background: var(--page);
+  }
+  table.sens tbody th {
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    font-size: 12px; font-weight: 600; color: var(--ink-2);
+    font-variant-numeric: tabular-nums; background: var(--page); text-align: left; white-space: nowrap;
+  }
+  table.sens td {
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    font-weight: 500; font-variant-numeric: tabular-nums; color: var(--ink);
+  }
+  table.sens td.good { background: var(--cell-good); }
+  table.sens td.warn { background: var(--cell-warn); }
+  table.sens td.crit { background: var(--cell-crit); }
+  table.sens td.current { outline: 2px solid var(--accent); outline-offset: -2px; font-weight: 600; }
+  .corner-label { font-style: normal; font-weight: 400; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; }
+
+  .assumptions { font-size: 12.5px; color: var(--ink-2); }
+  .assumptions h2 { font-size: 13px; margin: 0 0 8px; color: var(--ink); }
+  .assumptions p { margin: 0 0 8px; max-width: 82ch; }
+  .assumptions .mono { font-variant-numeric: tabular-nums; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-num, .stat .v, td { transition: opacity 120ms ease; }
+  }
+</style>
+
+<div class="wrap">
+  <header class="masthead">
+    <div>
+      <p class="eyebrow" style="margin-bottom:6px">Monte Carlo &middot; 1,000 trials</p>
+      <h1>Glidepath</h1>
+    </div>
+    <p class="tagline">Enter your plan on the left. Every change re-runs 1,000 randomized market histories and updates the odds, the range of outcomes, and the trade-off table.</p>
+  </header>
+
+  <div class="layout">
+    <!-- ============ INPUT RAIL ============ -->
+    <form class="panel rail" id="controls" onsubmit="return false">
+      <p class="eyebrow" style="margin:0">Your plan</p>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="curAge">Current age</label>
+          <input type="number" id="curAge" value="45" min="18" max="80" step="1">
+        </div>
+        <div class="field">
+          <label for="retAge">Retire at</label>
+          <input type="number" id="retAge" value="65" min="30" max="85" step="1">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="planAge">Plan through age</label>
+        <input type="number" id="planAge" value="95" min="70" max="110" step="1">
+        <span class="hint">Money must last to this age to count as a success.</span>
+      </div>
+
+      <div class="field">
+        <label for="portfolio">Portfolio today ($)</label>
+        <input type="number" id="portfolio" value="750000" min="0" step="10000">
+      </div>
+
+      <div class="field">
+        <label for="savings">Saved per year until retirement ($)</label>
+        <input type="number" id="savings" value="30000" min="0" step="1000">
+      </div>
+
+      <div class="field">
+        <label for="spend">Spent per year in retirement ($)</label>
+        <input type="number" id="spend" value="80000" min="0" step="1000">
+        <span class="hint">In today's dollars &mdash; the model works in real terms.</span>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="ss">Social Security ($/yr)</label>
+          <input type="number" id="ss" value="24000" min="0" step="1000">
+        </div>
+        <div class="field">
+          <label for="ssAge">Claim at</label>
+          <input type="number" id="ssAge" value="67" min="62" max="70" step="1">
+        </div>
+      </div>
+      <div class="field" style="margin-top:-10px">
+        <span class="hint">Estimated benefit in today's dollars. Set to $0 to exclude. Surplus benefit is reinvested.</span>
+      </div>
+
+      <div class="field">
+        <div class="slider-head">
+          <label for="flex">Spending cut in down years</label>
+          <output id="flexOut" for="flex">0%</output>
+        </div>
+        <input type="range" id="flex" value="0" min="0" max="30" step="5">
+        <span class="hint">In any year the portfolio loses money, that year's retirement spending drops by this much.</span>
+      </div>
+
+      <div class="field">
+        <div class="slider-head">
+          <label for="stocks">Stocks</label>
+          <output id="stocksOut" for="stocks">60%</output>
+        </div>
+        <input type="range" id="stocks" value="60" min="0" max="100" step="5">
+      </div>
+      <div class="field">
+        <div class="slider-head">
+          <label for="bonds">Bonds</label>
+          <output id="bondsOut" for="bonds">30%</output>
+        </div>
+        <input type="range" id="bonds" value="30" min="0" max="100" step="5">
+        <div class="alloc-bar" aria-hidden="true">
+          <span class="s" id="allocS"></span><span class="b" id="allocB"></span><span class="c" id="allocC"></span>
+        </div>
+        <div class="alloc-legend">
+          <span class="key"><span class="swatch" style="background:var(--alloc-stocks)"></span>Stocks</span>
+          <span class="key"><span class="swatch" style="background:var(--alloc-bonds)"></span>Bonds</span>
+          <span class="key"><span class="swatch" style="background:var(--alloc-cash)"></span>Cash <span class="mono" id="cashOut">10%</span></span>
+        </div>
+      </div>
+
+      <p class="blend-note">Blended real return <span class="mono" id="blendMu">&mdash;</span> &middot; volatility <span class="mono" id="blendSigma">&mdash;</span> per year</p>
+
+      <button type="button" class="reroll" id="reroll">&#8635; Re-roll the 1,000 trials</button>
+    </form>
+
+    <!-- ============ RESULTS ============ -->
+    <div class="results">
+
+      <section class="panel">
+        <p class="eyebrow">Probability of success</p>
+        <div class="hero">
+          <div>
+            <p class="hero-num" id="successNum">&mdash;<small>%</small></p>
+            <p class="status-chip" id="statusChip"><span class="dot"></span><span class="txt"></span></p>
+            <div class="meter" aria-hidden="true">
+              <div class="fill" id="meterFill" style="width:0%"></div>
+              <div class="tick" style="left:70%"></div>
+              <div class="tick" style="left:85%"></div>
+            </div>
+            <div class="meter-labels"><span>0</span><span>70</span><span>85</span><span>100</span></div>
+          </div>
+          <div class="hero-side">
+            <div class="stat"><div class="v" id="statTrials">&mdash;</div><div class="k" id="statTrialsK">trials kept money to the end</div></div>
+            <div class="stat"><div class="v" id="statMedianEnd">&mdash;</div><div class="k">median balance at the end</div></div>
+            <div class="stat"><div class="v" id="statFailAge">&mdash;</div><div class="k" id="statFailAgeK">typical depletion age in failed trials</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="chart-head">
+          <p class="eyebrow" style="margin:0">Portfolio value over time <span style="text-transform:none;letter-spacing:0">(today's dollars)</span></p>
+          <div class="legend">
+            <span class="key"><span class="line-key"></span>Median</span>
+            <span class="key"><span class="band-key" style="background:var(--band-inner)"></span>25th&ndash;75th pct</span>
+            <span class="key"><span class="band-key" style="background:var(--band-outer)"></span>10th&ndash;90th pct</span>
+          </div>
+        </div>
+        <div class="chart-box" id="chartBox">
+          <svg id="fanChart" viewBox="0 0 880 380" role="img" aria-label="Fan chart of simulated portfolio value by age, showing the median path and the 10th to 90th percentile range"></svg>
+          <div class="tooltip" id="chartTip"></div>
+        </div>
+        <p class="footnote">The shaded fan is the spread across all 1,000 trials at each age &mdash; the top edge is the 90th-percentile (best-decile) path, the bottom edge the 10th-percentile (worst-decile) path. Where the bottom edge touches zero, at least 10% of trials have run out of money.</p>
+      </section>
+
+      <section class="panel">
+        <p class="eyebrow">What moves the odds</p>
+        <div class="table-scroll">
+          <table class="sens" id="sensTable">
+            <caption>Success rate out of 1,000 trials for each combination. Green &ge; 85%, amber 70&ndash;84%, red &lt; 70%. The outlined cell is your current plan.</caption>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel assumptions">
+        <h2>Assumptions</h2>
+        <p>All figures are real (inflation-adjusted), so results read in today's dollars. Annual returns are drawn from normal distributions calibrated to long-run U.S. history: stocks <span class="mono">6.8%</span> mean, <span class="mono">17.2%</span> standard deviation; bonds <span class="mono">2.0%</span> / <span class="mono">6.5%</span>; cash <span class="mono">0.5%</span> / <span class="mono">1.0%</span>; stock&ndash;bond correlation <span class="mono">0.10</span>. Savings are added and withdrawals taken at the end of each year; the allocation is rebalanced annually. Social Security is treated as inflation-adjusted income from the claiming age on &mdash; it offsets spending in retirement, adds to savings if claimed while still working, and any surplus over spending is reinvested. With a spending cut set, spending drops by that percentage in any year the portfolio return is negative and returns to normal after positive years; a trial that runs dry stays failed even if benefits continue. Trials are seeded deterministically from your inputs, so the same plan always shows the same result &mdash; use re-roll to see sampling variation. This is an educational model, not financial advice.</p>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- asset model (real annual returns) ----------
+  var ASSETS = {
+    stocks: { mu: 0.068, sigma: 0.172 },
+    bonds:  { mu: 0.020, sigma: 0.065 },
+    cash:   { mu: 0.005, sigma: 0.010 }
+  };
+  var RHO_SB = 0.10; // stock\u2013bond correlation
+  var TRIALS = 1000;
+
+  // ---------- seeded RNG + gaussians ----------
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = a + 0x6D2B79F5 | 0;
+      var t = Math.imul(a ^ a >>> 15, 1 | a);
+      t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+  function gaussianSource(rand) {
+    var spare = null;
+    return function () {
+      if (spare !== null) { var s = spare; spare = null; return s; }
+      var u, v, r;
+      do { u = rand() * 2 - 1; v = rand() * 2 - 1; r = u * u + v * v; } while (r >= 1 || r === 0);
+      var m = Math.sqrt(-2 * Math.log(r) / r);
+      spare = v * m;
+      return u * m;
+    };
+  }
+  function hashInputs(p, roll) {
+    var s = [p.curAge, p.retAge, p.planAge, p.portfolio, p.savings, p.spend, p.ss, p.ssAge, p.flexCut, p.ws, p.wb, roll].join("|");
+    var h = 2166136261;
+    for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+
+  // ---------- core simulation ----------
+  // Returns { successRate, paths: perYear percentile arrays, endBalances, failAges }
+  function simulate(p, seed, trials, keepPaths) {
+    var years = p.planAge - p.curAge;
+    var rand = mulberry32(seed);
+    var gauss = gaussianSource(rand);
+    var ws = p.ws, wb = p.wb, wc = 1 - ws - wb;
+    var rootSB = Math.sqrt(1 - RHO_SB * RHO_SB);
+    var successes = 0;
+    var byYear = null;
+    if (keepPaths) {
+      byYear = new Array(years + 1);
+      for (var y = 0; y <= years; y++) byYear[y] = new Float64Array(trials);
+    }
+    var endBalances = keepPaths ? new Float64Array(trials) : null;
+    var failAges = keepPaths ? [] : null;
+
+    for (var t = 0; t < trials; t++) {
+      var bal = p.portfolio;
+      if (keepPaths) byYear[0][t] = bal;
+      var failedAt = -1;
+      for (var y2 = 1; y2 <= years; y2++) {
+        var age = p.curAge + y2;
+        if (bal > 0) {
+          var zs = gauss(), zb0 = gauss(), zc = gauss();
+          var rs = ASSETS.stocks.mu + ASSETS.stocks.sigma * zs;
+          var rb = ASSETS.bonds.mu + ASSETS.bonds.sigma * (RHO_SB * zs + rootSB * zb0);
+          var rc = ASSETS.cash.mu + ASSETS.cash.sigma * zc;
+          var rp = ws * rs + wb * rb + wc * rc;
+          bal *= (1 + rp);
+          var income = age >= p.ssAge ? p.ss : 0;
+          if (age <= p.retAge) {
+            bal += p.savings + income;
+          } else {
+            var spendNow = rp < 0 ? p.spend * (1 - p.flexCut) : p.spend;
+            bal -= spendNow - income; // surplus benefit reinvests
+          }
+          if (bal <= 0) { bal = 0; if (failedAt < 0) failedAt = age; }
+        } else {
+          // stay depleted, but keep RNG consumption identical across trials
+          gauss(); gauss(); gauss();
+        }
+        if (keepPaths) byYear[y2][t] = bal;
+      }
+      if (bal > 0) successes++;
+      if (keepPaths) {
+        endBalances[t] = bal;
+        if (failedAt > 0) failAges.push(failedAt);
+      }
+    }
+
+    var out = { successRate: successes / trials, successes: successes };
+    if (keepPaths) {
+      var pct = function (sorted, q) {
+        var idx = q * (sorted.length - 1);
+        var lo = Math.floor(idx), hi = Math.ceil(idx);
+        return sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
+      };
+      var p10 = [], p25 = [], p50 = [], p75 = [], p90 = [];
+      for (var y3 = 0; y3 <= years; y3++) {
+        var col = Array.prototype.slice.call(byYear[y3]).sort(function (a, b) { return a - b; });
+        p10.push(pct(col, 0.10)); p25.push(pct(col, 0.25)); p50.push(pct(col, 0.50));
+        p75.push(pct(col, 0.75)); p90.push(pct(col, 0.90));
+      }
+      var endSorted = Array.prototype.slice.call(endBalances).sort(function (a, b) { return a - b; });
+      out.p10 = p10; out.p25 = p25; out.p50 = p50; out.p75 = p75; out.p90 = p90;
+      out.medianEnd = pct(endSorted, 0.5);
+      if (failAges.length) {
+        failAges.sort(function (a, b) { return a - b; });
+        out.medianFailAge = failAges[Math.floor(failAges.length / 2)];
+      }
+    }
+    return out;
+  }
+
+  // ---------- formatting ----------
+  function fmtMoney(v) {
+    if (v >= 1e6) return "$" + (v / 1e6).toFixed(v >= 10e6 ? 1 : 2) + "M";
+    if (v >= 1e3) return "$" + Math.round(v / 1e3) + "k";
+    return "$" + Math.round(v);
+  }
+  function fmtMoneyFull(v) {
+    return "$" + Math.round(v).toLocaleString("en-US");
+  }
+  function niceCeil(v) {
+    var mag = Math.pow(10, Math.floor(Math.log10(v)));
+    var n = v / mag;
+    var step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 4 ? 4 : n <= 5 ? 5 : n <= 8 ? 8 : 10;
+    return step * mag;
+  }
+
+  // ---------- read inputs ----------
+  var el = function (id) { return document.getElementById(id); };
+  var rollCount = 0;
+
+  function readParams() {
+    var curAge = Math.max(18, Math.min(80, Math.round(+el("curAge").value || 45)));
+    var retAge = Math.round(+el("retAge").value || 65);
+    var planAge = Math.round(+el("planAge").value || 95);
+    retAge = Math.max(curAge + 1, Math.min(90, retAge));
+    planAge = Math.max(retAge + 1, Math.min(110, planAge));
+    var s = Math.max(0, Math.min(100, Math.round(+el("stocks").value)));
+    var b = Math.max(0, Math.min(100 - s, Math.round(+el("bonds").value)));
+    if (+el("bonds").value !== b) el("bonds").value = b;
+    return {
+      curAge: curAge, retAge: retAge, planAge: planAge,
+      portfolio: Math.max(0, +el("portfolio").value || 0),
+      savings: Math.max(0, +el("savings").value || 0),
+      spend: Math.max(0, +el("spend").value || 0),
+      ss: Math.max(0, +el("ss").value || 0),
+      ssAge: Math.max(62, Math.min(70, Math.round(+el("ssAge").value || 67))),
+      flexCut: Math.max(0, Math.min(30, Math.round(+el("flex").value))) / 100,
+      ws: s / 100, wb: b / 100
+    };
+  }
+
+  function updateAllocUI(p) {
+    var wc = 1 - p.ws - p.wb;
+    el("stocksOut").textContent = Math.round(p.ws * 100) + "%";
+    el("bondsOut").textContent = Math.round(p.wb * 100) + "%";
+    el("cashOut").textContent = Math.round(wc * 100) + "%";
+    el("allocS").style.width = (p.ws * 100) + "%";
+    el("allocB").style.width = (p.wb * 100) + "%";
+    el("allocC").style.width = (wc * 100) + "%";
+    el("flexOut").textContent = Math.round(p.flexCut * 100) + "%";
+    var mu = p.ws * ASSETS.stocks.mu + p.wb * ASSETS.bonds.mu + wc * ASSETS.cash.mu;
+    var varP = Math.pow(p.ws * ASSETS.stocks.sigma, 2) + Math.pow(p.wb * ASSETS.bonds.sigma, 2) +
+               Math.pow(wc * ASSETS.cash.sigma, 2) +
+               2 * p.ws * ASSETS.stocks.sigma * p.wb * ASSETS.bonds.sigma * RHO_SB;
+    el("blendMu").textContent = (mu * 100).toFixed(1) + "%";
+    el("blendSigma").textContent = (Math.sqrt(varP) * 100).toFixed(1) + "%";
+  }
+
+  // ---------- hero ----------
+  function statusFor(rate) {
+    var pctVal = rate * 100;
+    if (pctVal >= 85) return { cls: "good", label: "On track", color: "var(--status-good)", text: "var(--status-good-text)" };
+    if (pctVal >= 70) return { cls: "warn", label: "Borderline", color: "var(--status-warn)", text: "var(--status-warn-text)" };
+    return { cls: "crit", label: "At risk", color: "var(--status-crit)", text: "var(--status-crit-text)" };
+  }
+
+  function renderHero(res, p) {
+    var pctVal = Math.round(res.successRate * 100);
+    el("successNum").innerHTML = pctVal + "<small>%</small>";
+    var st = statusFor(res.successRate);
+    var chip = el("statusChip");
+    chip.querySelector(".dot").style.background = st.color;
+    chip.querySelector(".txt").textContent = st.label;
+    chip.style.color = st.text;
+    el("meterFill").style.width = pctVal + "%";
+    el("statTrials").textContent = res.successes.toLocaleString("en-US") + " / 1,000";
+    el("statTrialsK").textContent = "trials kept money to age " + p.planAge;
+    el("statMedianEnd").textContent = fmtMoney(res.medianEnd);
+    if (res.medianFailAge) {
+      el("statFailAge").textContent = "age " + res.medianFailAge;
+      el("statFailAgeK").textContent = "typical depletion age in the " + (1000 - res.successes) + " failed trials";
+    } else {
+      el("statFailAge").textContent = "\u2014";
+      el("statFailAgeK").textContent = "no trial ran out of money";
+    }
+  }
+
+  // ---------- fan chart ----------
+  var chartState = null;
+
+  function renderChart(res, p) {
+    var svg = el("fanChart");
+    var W = 880, H = 380, mL = 62, mR = 58, mT = 16, mB = 34;
+    var iw = W - mL - mR, ih = H - mT - mB;
+    var years = p.planAge - p.curAge;
+    var yMax = niceCeil(Math.max.apply(null, res.p90) * 1.05 || 1);
+    var x = function (i) { return mL + (i / years) * iw; };
+    var y = function (v) { return mT + ih - (v / yMax) * ih; };
+
+    var ns = "http://www.w3.org/2000/svg";
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    function add(tag, attrs, parent) {
+      var n = document.createElementNS(ns, tag);
+      for (var k in attrs) n.setAttribute(k, attrs[k]);
+      (parent || svg).appendChild(n);
+      return n;
+    }
+
+    // gridlines + y labels
+    var yTicks = 5;
+    for (var g = 0; g <= yTicks; g++) {
+      var val = yMax * g / yTicks;
+      var yy = y(val);
+      add("line", { x1: mL, x2: mL + iw, y1: yy, y2: yy, stroke: g === 0 ? "var(--baseline)" : "var(--grid)", "stroke-width": 1 });
+      var lbl = add("text", { x: mL - 8, y: yy + 4, "text-anchor": "end", "class": "axis-text" });
+      lbl.textContent = fmtMoney(val);
+    }
+    // x labels every 5 years of age
+    for (var age = Math.ceil(p.curAge / 5) * 5; age <= p.planAge; age += 5) {
+      var xi = x(age - p.curAge);
+      add("line", { x1: xi, x2: xi, y1: mT + ih, y2: mT + ih + 4, stroke: "var(--baseline)", "stroke-width": 1 });
+      var xl = add("text", { x: xi, y: mT + ih + 18, "text-anchor": "middle", "class": "axis-text" });
+      xl.textContent = age;
+    }
+    var xTitle = add("text", { x: mL + iw / 2, y: H - 2, "text-anchor": "middle", "class": "axis-text" });
+    xTitle.textContent = "age";
+
+    function bandPath(upper, lower) {
+      var d = "M";
+      for (var i = 0; i <= years; i++) d += (i ? "L" : "") + x(i).toFixed(1) + " " + y(upper[i]).toFixed(1);
+      for (var j = years; j >= 0; j--) d += "L" + x(j).toFixed(1) + " " + y(lower[j]).toFixed(1);
+      return d + "Z";
+    }
+    function linePath(series) {
+      var d = "M";
+      for (var i = 0; i <= years; i++) d += (i ? "L" : "") + x(i).toFixed(1) + " " + y(series[i]).toFixed(1);
+      return d;
+    }
+
+    add("path", { d: bandPath(res.p90, res.p10), fill: "var(--band-outer)", stroke: "none" });
+    add("path", { d: bandPath(res.p75, res.p25), fill: "var(--band-inner)", stroke: "none" });
+    add("path", { d: linePath(res.p50), fill: "none", stroke: "var(--accent)", "stroke-width": 2, "stroke-linejoin": "round" });
+
+    // retirement marker
+    var rx = x(p.retAge - p.curAge);
+    add("line", { x1: rx, x2: rx, y1: mT, y2: mT + ih, stroke: "var(--baseline)", "stroke-width": 1, "stroke-dasharray": "3 4" });
+    var rl = add("text", { x: rx + 5, y: mT + 12, "class": "axis-text" });
+    rl.textContent = "retire " + p.retAge;
+
+    // Social Security marker
+    if (p.ss > 0 && p.ssAge > p.curAge && p.ssAge < p.planAge) {
+      var sxp = x(p.ssAge - p.curAge);
+      add("line", { x1: sxp, x2: sxp, y1: mT, y2: mT + ih, stroke: "var(--baseline)", "stroke-width": 1, "stroke-dasharray": "1 4" });
+      var overlapsRetire = Math.abs(p.ssAge - p.retAge) * (iw / years) < 62;
+      var sl = add("text", { x: sxp + 5, y: mT + (overlapsRetire ? 26 : 12), "class": "axis-text" });
+      sl.textContent = "SS " + p.ssAge;
+    }
+
+    // selective direct labels at right edge
+    function endLabel(series, text, dy) {
+      var t = add("text", { x: mL + iw + 6, y: y(series[years]) + (dy || 4), "class": "direct-label", fill: "var(--accent-ink)" });
+      t.textContent = text;
+      return t;
+    }
+    var l90 = endLabel(res.p90, "90th");
+    var lMed = endLabel(res.p50, "median");
+    var l10 = endLabel(res.p10, "10th");
+    // nudge collisions apart
+    var placed = [l90, lMed, l10];
+    for (var q = 1; q < placed.length; q++) {
+      var prev = +placed[q - 1].getAttribute("y"), cur = +placed[q].getAttribute("y");
+      if (cur - prev < 13) placed[q].setAttribute("y", prev + 13);
+    }
+
+    // crosshair
+    var cross = add("line", { x1: 0, x2: 0, y1: mT, y2: mT + ih, stroke: "var(--baseline)", "stroke-width": 1, visibility: "hidden" });
+    var dot = add("circle", { r: 4, fill: "var(--accent)", stroke: "var(--surface)", "stroke-width": 2, visibility: "hidden" });
+
+    chartState = { res: res, p: p, x: x, y: y, years: years, mL: mL, iw: iw, mT: mT, ih: ih, W: W, cross: cross, dot: dot };
+  }
+
+  function bindChartHover() {
+    var box = el("chartBox"), svg = el("fanChart"), tip = el("chartTip");
+    function move(clientX, clientY) {
+      if (!chartState) return;
+      var rect = svg.getBoundingClientRect();
+      var sx = (clientX - rect.left) / rect.width * chartState.W;
+      var i = Math.round((sx - chartState.mL) / chartState.iw * chartState.years);
+      if (i < 0 || i > chartState.years) { leave(); return; }
+      var s = chartState, r = s.res;
+      var px = s.x(i);
+      s.cross.setAttribute("x1", px); s.cross.setAttribute("x2", px);
+      s.cross.setAttribute("visibility", "visible");
+      s.dot.setAttribute("cx", px); s.dot.setAttribute("cy", s.y(r.p50[i]));
+      s.dot.setAttribute("visibility", "visible");
+      var age = s.p.curAge + i;
+      tip.innerHTML =
+        '<div class="t-age">Age ' + age + (age === s.p.retAge ? " \u00b7 retire" : "") + "</div>" +
+        '<div class="row"><span>90th</span><span class="val">' + fmtMoney(r.p90[i]) + "</span></div>" +
+        '<div class="row"><span>75th</span><span class="val">' + fmtMoney(r.p75[i]) + "</span></div>" +
+        '<div class="row"><span>Median</span><span class="val">' + fmtMoney(r.p50[i]) + "</span></div>" +
+        '<div class="row"><span>25th</span><span class="val">' + fmtMoney(r.p25[i]) + "</span></div>" +
+        '<div class="row"><span>10th</span><span class="val">' + fmtMoney(r.p10[i]) + "</span></div>";
+      tip.style.display = "block";
+      var bx = box.getBoundingClientRect();
+      var left = (px / chartState.W) * rect.width + 14;
+      if (left + tip.offsetWidth > bx.width - 4) left = left - tip.offsetWidth - 28;
+      tip.style.left = left + "px";
+      tip.style.top = Math.max(0, clientY - bx.top - tip.offsetHeight - 12) + "px";
+    }
+    function leave() {
+      tip.style.display = "none";
+      if (chartState) {
+        chartState.cross.setAttribute("visibility", "hidden");
+        chartState.dot.setAttribute("visibility", "hidden");
+      }
+    }
+    svg.addEventListener("mousemove", function (e) { move(e.clientX, e.clientY); });
+    svg.addEventListener("mouseleave", leave);
+    svg.addEventListener("touchstart", function (e) { if (e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+    svg.addEventListener("touchmove", function (e) { if (e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+    svg.addEventListener("touchend", leave);
+  }
+
+  // ---------- sensitivity table ----------
+  function renderSensitivity(p, seed) {
+    var ageOffsets = [-2, -1, 0, 1, 2].map(function (d) { return p.retAge + d; })
+      .filter(function (a) { return a > p.curAge && a < p.planAge; });
+    var spendFactors = [0.8, 0.9, 1.0, 1.1, 1.2];
+    var table = el("sensTable");
+    // keep the caption node, rebuild the rest
+    var caption = table.querySelector("caption");
+    table.innerHTML = "";
+    table.appendChild(caption);
+
+    var thead = document.createElement("thead");
+    var hr = document.createElement("tr");
+    var corner = document.createElement("th");
+    corner.innerHTML = '<span class="corner-label">Retire at \u2193 \u00b7 Spend \u2192</span>';
+    hr.appendChild(corner);
+    spendFactors.forEach(function (f) {
+      var th = document.createElement("th");
+      var amt = Math.round(p.spend * f);
+      th.textContent = fmtMoney(amt) + "/yr";
+      if (f === 1) th.textContent += " (now)";
+      hr.appendChild(th);
+    });
+    thead.appendChild(hr);
+    table.appendChild(thead);
+
+    var tbody = document.createElement("tbody");
+    ageOffsets.forEach(function (age) {
+      var tr = document.createElement("tr");
+      var th = document.createElement("th");
+      th.scope = "row";
+      th.textContent = "age " + age + (age === p.retAge ? " (now)" : "");
+      tr.appendChild(th);
+      spendFactors.forEach(function (f) {
+        var q = { curAge: p.curAge, retAge: age, planAge: p.planAge, portfolio: p.portfolio,
+                  savings: p.savings, spend: p.spend * f, ss: p.ss, ssAge: p.ssAge,
+                  flexCut: p.flexCut, ws: p.ws, wb: p.wb };
+        var r = simulate(q, seed ^ (age * 131 + Math.round(f * 100)), TRIALS, false);
+        var pctVal = Math.round(r.successRate * 100);
+        var td = document.createElement("td");
+        td.textContent = pctVal + "%";
+        td.className = pctVal >= 85 ? "good" : pctVal >= 70 ? "warn" : "crit";
+        if (age === p.retAge && f === 1) td.classList.add("current");
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+  }
+
+  // ---------- orchestration ----------
+  var debounceTimer = null;
+  function runAll() {
+    var p = readParams();
+    updateAllocUI(p);
+    var seed = hashInputs(p, rollCount);
+    var res = simulate(p, seed, TRIALS, true);
+    renderHero(res, p);
+    renderChart(res, p);
+    // sensitivity is 25 extra full runs \u2014 let the main result paint first
+    setTimeout(function () { renderSensitivity(p, seed); }, 10);
+  }
+  function schedule() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(runAll, 160);
+  }
+
+  ["curAge", "retAge", "planAge", "portfolio", "savings", "spend", "ss", "ssAge", "flex", "stocks", "bonds"].forEach(function (id) {
+    el(id).addEventListener("input", schedule);
+  });
+  el("reroll").addEventListener("click", function () { rollCount++; runAll(); });
+
+  bindChartHover();
+  runAll();
+})();
+</script>
