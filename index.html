@@ -161,7 +161,7 @@
 <main class="wrap">
   <section class="hero">
     <div class="hero-copy">
-      <p class="kicker">Free &middot; no sign-up &middot; nothing leaves your browser</p>
+      <p class="kicker">Free &middot; no sign-up &middot; your numbers stay in your browser</p>
       <h1>Know if your money will last.</h1>
       <p class="sub">Two tools, one question. Estimate how an investment grows in two minutes, or stress-test a full retirement plan against 1,000 simulated market histories.</p>
     </div>
@@ -210,6 +210,98 @@
 <footer class="site-footer">
   <div class="footer-inner">
     <span>Educational tools, not financial advice.</span>
+    <a href="#" id="cg-reopen" style="color: var(--muted);">Privacy choices</a>
     <span class="mono">ishouldsave.com</span>
   </div>
 </footer>
+
+<style>
+  .cg-banner {
+    position: fixed; left: 16px; right: 16px; bottom: 16px; z-index: 50;
+    max-width: 760px; margin: 0 auto;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.16);
+    padding: 16px 18px; display: flex; gap: 18px; align-items: center; flex-wrap: wrap;
+  }
+  .cg-banner[hidden] { display: none; }
+  .cg-banner p { margin: 0; font-size: 13px; color: var(--ink-2); flex: 1 1 320px; line-height: 1.5; }
+  .cg-banner strong { color: var(--ink); }
+  .cg-actions { display: flex; gap: 10px; }
+  .cg-btn {
+    font: 600 13px "IBM Plex Sans", system-ui, sans-serif;
+    padding: 9px 16px; border-radius: 6px; cursor: pointer;
+  }
+  .cg-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .cg-accept-btn { background: var(--accent); color: #ffffff; border: 1px solid var(--accent); }
+  .cg-accept-btn:hover { background: var(--accent-ink); }
+  .cg-reject-btn { background: var(--surface); color: var(--ink); border: 1px solid var(--baseline); }
+  .cg-reject-btn:hover { border-color: var(--ink-2); }
+</style>
+
+<div id="cg-banner" class="cg-banner" role="dialog" aria-live="polite" aria-label="Privacy consent" hidden>
+  <p><strong>Traffic measurement.</strong> If you accept, we load Google Analytics, which shares your page views and device and approximate location information with Google. Nothing loads unless you accept &mdash; and your calculator inputs never leave your browser either way.</p>
+  <div class="cg-actions">
+    <button id="cg-accept" class="cg-btn cg-accept-btn" type="button">Accept</button>
+    <button id="cg-reject" class="cg-btn cg-reject-btn" type="button">Decline</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var KEY = "cg_consent_v1";
+  var VERSION = 1;
+  var TTL_DAYS = 180;
+
+  function loadAnalytics() {
+    var GA_ID = "G-828W5WCP3Z";
+    var s = document.createElement("script");
+    s.src = "https://www.googletagmanager.com/gtag/js?id=" + GA_ID;
+    s.async = true;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    gtag("js", new Date());
+    gtag("config", GA_ID);
+  }
+
+  function read() {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return null;
+      var d = JSON.parse(raw);
+      if (d.v !== VERSION) return null;
+      if ((Date.now() - d.t) / 86400000 > TTL_DAYS) return null;
+      return d;
+    } catch (e) { return null; }
+  }
+  function write(granted) {
+    try { localStorage.setItem(KEY, JSON.stringify({ v: VERSION, t: Date.now(), granted: granted })); } catch (e) {}
+  }
+
+  var banner = document.getElementById("cg-banner");
+  var prior = read();
+  if (prior) {
+    if (prior.granted.indexOf("analytics") !== -1) loadAnalytics();
+  } else {
+    banner.hidden = false;
+  }
+  document.getElementById("cg-accept").addEventListener("click", function () {
+    write(["analytics"]);
+    banner.hidden = true;
+    loadAnalytics();
+  });
+  document.getElementById("cg-reject").addEventListener("click", function () {
+    write([]);
+    banner.hidden = true;
+  });
+  var reopen = document.getElementById("cg-reopen");
+  if (reopen) {
+    reopen.addEventListener("click", function (e) {
+      e.preventDefault();
+      try { localStorage.removeItem(KEY); } catch (err) {}
+      location.reload();
+    });
+  }
+})();
+</script>
