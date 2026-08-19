@@ -1,20 +1,17 @@
 # I Should Save
 
-Live at [ishouldsave.com](https://ishouldsave.com).
+The source for [ishouldsave.com](https://ishouldsave.com) — free, dependency-free financial tools that run entirely in the browser. No build step, no server, no external libraries; every page is a single self-contained HTML file.
 
-**Glidepath** is a single-file, dependency-free Monte Carlo retirement simulator. Open `index.html` in any browser — no build step, no server, no external libraries.
+## Pages
 
-## What it does
+- **`index.html`** — landing page that routes visitors to the right tool.
+- **`simple.html`** — Simple Investment Calculator: compound growth with scheduled contributions, an end-balance breakdown, growth chart, and accumulation schedule.
+- **`advanced.html`** — Advanced Simulation: a Monte Carlo retirement model running 1,000 randomized market histories with taxes and account types (taxable / tax-deferred / Roth, RMDs), Social Security scenarios, guardrails spending, healthcare, joint-household survivor modeling, and historical stress replays (1966–82, 2000–02, 2008, 2022).
 
-Enter your plan (age, retirement age, portfolio, savings, spending, Social Security, and asset allocation) and it runs 1,000 randomized market histories against long-run U.S. return and volatility assumptions, reporting:
+Every input on both calculators has a plain-language tooltip. All simulation figures are real (inflation-adjusted); trials are seeded deterministically so the same plan always shows the same result.
 
-- **Probability of success** — the share of trials in which money lasts through your planning horizon
-- **Fan chart** — median portfolio path with 10th–90th percentile bands, in today's dollars
-- **Sensitivity table** — how success odds shift as you vary retirement age (±2 years) and spending (80–120%)
-- **Spending flexibility** — an optional guardrail that cuts spending in down-market years
-
-All figures are real (inflation-adjusted). Trials are seeded deterministically from your inputs, so the same plan always shows the same result.
+Deployment: rsync to DreamHost via GitHub Actions on push to `main` (see `.github/workflows/deploy.yml`; requires `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_KEY` secrets).
 
 See [CHANGELOG.md](CHANGELOG.md) for version history.
 
-*Educational model, not financial advice.*
+*Educational tools, not financial advice.*

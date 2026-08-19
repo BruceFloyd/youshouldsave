@@ -1,0 +1,520 @@
+<title>Simple Investment Calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --accent: #2a78d6;
+    --accent-ink: #1c5cab;
+    --band: rgba(42,120,214,0.13);
+    --contrib: #1baf7a;
+    --contrib-band: rgba(27,175,122,0.25);
+    --input-bg: #ffffff;
+    --tooltip-bg: #0b0b0b;
+    --tooltip-ink: #ffffff;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --ink: #ffffff;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --baseline: #383835;
+      --border: rgba(255,255,255,0.10);
+      --accent: #3987e5;
+      --accent-ink: #6da7ec;
+      --band: rgba(57,135,229,0.16);
+      --contrib: #199e70;
+      --contrib-band: rgba(25,158,112,0.30);
+      --input-bg: #232322;
+      --tooltip-bg: #fcfcfb;
+      --tooltip-ink: #0b0b0b;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --muted: #898781;
+    --grid: #2c2c2a;
+    --baseline: #383835;
+    --border: rgba(255,255,255,0.10);
+    --accent: #3987e5;
+    --accent-ink: #6da7ec;
+    --band: rgba(57,135,229,0.16);
+    --contrib: #199e70;
+    --contrib-band: rgba(25,158,112,0.30);
+    --input-bg: #232322;
+    --tooltip-bg: #fcfcfb;
+    --tooltip-ink: #0b0b0b;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 32px 24px 72px; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace; }
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--muted); margin: 0 0 12px;
+  }
+
+  .site-header { border-bottom: 1px solid var(--grid); background: var(--page); }
+  .site-nav { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; max-width: 1180px; margin: 0 auto; padding: 16px 24px; }
+  .wordmark {
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    font-weight: 600; font-size: 14px; letter-spacing: 0.14em;
+    color: var(--ink); text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 22px; font-size: 13px; font-weight: 600; flex-wrap: wrap; }
+  .nav-links a { color: var(--ink-2); text-decoration: none; padding-bottom: 2px; }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links a[aria-current="page"] { color: var(--ink); border-bottom: 2px solid var(--accent); }
+
+  .masthead { margin-bottom: 8px; }
+  h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
+
+  .layout { display: grid; grid-template-columns: 340px 1fr; gap: 24px; align-items: start; margin-top: 24px; }
+  @media (max-width: 940px) { .layout { grid-template-columns: 1fr; } }
+
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px; }
+
+  .rail { display: flex; flex-direction: column; gap: 16px; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 13px; font-weight: 600; color: var(--ink); display: inline-flex; align-items: center; gap: 6px; }
+  .field .hint { font-size: 12px; color: var(--muted); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  input[type="number"], select {
+    width: 100%;
+    font: 500 14px "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+  select { font-family: "IBM Plex Sans", system-ui, sans-serif; font-size: 13px; }
+  input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+
+  .tip { position: relative; display: inline-flex; align-items: center; }
+  .tip-btn {
+    width: 15px; height: 15px; border-radius: 50%; flex: none;
+    border: 1px solid var(--baseline); background: transparent; color: var(--muted);
+    font: 600 10px "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    padding: 0; line-height: 1; cursor: help; display: inline-flex; align-items: center; justify-content: center;
+  }
+  .tip-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .tip-body {
+    position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+    width: 240px; display: none; z-index: 6;
+    background: var(--tooltip-bg); color: var(--tooltip-ink);
+    border-radius: 6px; padding: 9px 11px;
+    font-size: 12px; font-weight: 400; line-height: 1.5; white-space: normal;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+  }
+  .tip:hover .tip-body, .tip:focus-within .tip-body { display: block; }
+
+  .results { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+
+  .hero { display: flex; align-items: center; gap: 36px; flex-wrap: wrap; }
+  .hero-num { font-size: 56px; font-weight: 700; line-height: 1.05; letter-spacing: -0.03em; margin: 2px 0 0; font-variant-numeric: tabular-nums; }
+  .hero-side { display: grid; gap: 12px; }
+  .stat { border-left: 2px solid var(--grid); padding-left: 14px; }
+  .stat.k-start { border-left-color: var(--accent); }
+  .stat.k-contrib { border-left-color: var(--contrib); }
+  .stat .v { font: 600 18px "IBM Plex Mono", ui-monospace, Menlo, monospace; font-variant-numeric: tabular-nums; }
+  .stat .k { font-size: 12px; color: var(--ink-2); }
+
+  .chart-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--ink-2); }
+  .legend .key { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .band-key { width: 14px; height: 10px; border-radius: 2px; display: inline-block; }
+  .chart-box { position: relative; margin-top: 12px; }
+  .chart-box svg { display: block; width: 100%; height: auto; }
+  .tooltip {
+    position: absolute; pointer-events: none; z-index: 3; display: none;
+    background: var(--tooltip-bg); color: var(--tooltip-ink);
+    border-radius: 6px; padding: 8px 11px; font-size: 12px; line-height: 1.55;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.25);
+    min-width: 150px;
+  }
+  .tooltip .t-hd { font-weight: 700; margin-bottom: 2px; }
+  .tooltip .row { display: flex; justify-content: space-between; gap: 14px; }
+  .tooltip .row .val { font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace; font-variant-numeric: tabular-nums; }
+  .axis-text { font: 400 11px "IBM Plex Mono", ui-monospace, Menlo, monospace; fill: var(--muted); }
+  .footnote { font-size: 12px; color: var(--muted); margin: 14px 0 0; max-width: 78ch; }
+
+  .table-scroll { overflow-x: auto; max-height: 420px; overflow-y: auto; margin-top: 12px; border: 1px solid var(--grid); border-radius: 6px; }
+  table.sched { border-collapse: collapse; width: 100%; min-width: 480px; }
+  table.sched th, table.sched td {
+    font-size: 13px; padding: 8px 12px; border-bottom: 1px solid var(--grid);
+    font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace; font-variant-numeric: tabular-nums;
+  }
+  table.sched thead th {
+    position: sticky; top: 0; background: var(--page);
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-2);
+    text-align: right;
+  }
+  table.sched thead th:first-child, table.sched td:first-child { text-align: left; }
+  table.sched td { text-align: right; color: var(--ink); }
+  table.sched tbody tr:last-child td { border-bottom: none; font-weight: 600; }
+</style>
+
+<header class="site-header">
+  <nav class="site-nav" aria-label="Site">
+    <a class="wordmark" href="index.html">I SHOULD SAVE</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="simple.html" aria-current="page">Simple Calculator</a>
+      <a href="advanced.html">Advanced Simulation</a>
+    </div>
+  </nav>
+</header>
+
+<div class="wrap">
+  <header class="masthead">
+    <p class="eyebrow" style="margin-bottom:6px">Quick estimate</p>
+    <h1>Simple Investment Calculator</h1>
+  </header>
+
+  <div class="layout">
+    <form class="panel rail" id="controls" onsubmit="return false">
+      <div class="field">
+        <label for="start">Starting amount ($)</label>
+        <input type="number" id="start" value="20000" min="0" step="1000">
+      </div>
+      <div class="field">
+        <label for="years">Years to grow</label>
+        <input type="number" id="years" value="10" min="1" max="60" step="1">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="rate">Return rate %/yr</label>
+          <input type="number" id="rate" value="6" min="0" max="20" step="0.1">
+        </div>
+        <div class="field">
+          <label for="compound">Compounds</label>
+          <select id="compound">
+            <option value="1" selected>Annually</option>
+            <option value="2">Semiannually</option>
+            <option value="4">Quarterly</option>
+            <option value="12">Monthly</option>
+            <option value="365">Daily</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="contrib">Additional contribution ($)</label>
+        <input type="number" id="contrib" value="1000" min="0" step="100">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="contribFreq">Every</label>
+          <select id="contribFreq">
+            <option value="month" selected>Month</option>
+            <option value="year">Year</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="timing">At the</label>
+          <select id="timing">
+            <option value="end" selected>End</option>
+            <option value="begin">Beginning</option>
+          </select>
+        </div>
+      </div>
+      <p class="hint" style="margin:0; border-top: 1px solid var(--grid); padding-top: 12px;">Results update as you type. For inflation, taxes, retirement spending, and market ups and downs, use the <a href="advanced.html" style="color:var(--accent-ink)">Advanced Simulation</a>.</p>
+    </form>
+
+    <div class="results">
+      <section class="panel">
+        <p class="eyebrow">End balance</p>
+        <div class="hero">
+          <div>
+            <p class="hero-num" id="endBal">&mdash;</p>
+            <p class="footnote" id="endBalNote" style="margin-top:6px"></p>
+          </div>
+          <svg id="donut" width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Breakdown of the end balance into starting amount, contributions, and interest"></svg>
+          <div class="hero-side">
+            <div class="stat k-start"><div class="v" id="statStart">&mdash;</div><div class="k">starting amount</div></div>
+            <div class="stat k-contrib"><div class="v" id="statContrib">&mdash;</div><div class="k">total contributions</div></div>
+            <div class="stat"><div class="v" id="statInterest">&mdash;</div><div class="k">total interest earned</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="chart-head">
+          <p class="eyebrow" style="margin:0">Growth by year</p>
+          <div class="legend">
+            <span class="key"><span class="band-key" style="background:var(--contrib-band)"></span>Money you put in</span>
+            <span class="key"><span class="band-key" style="background:var(--band)"></span>Interest earned</span>
+          </div>
+        </div>
+        <div class="chart-box" id="chartBox">
+          <svg id="growthChart" viewBox="0 0 880 320" role="img" aria-label="Stacked area chart of balance by year, split into deposits and interest"></svg>
+          <div class="tooltip" id="chartTip"></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <p class="eyebrow">Accumulation schedule</p>
+        <div class="table-scroll">
+          <table class="sched" id="schedTable">
+            <thead><tr><th>Year</th><th>Deposits</th><th>Interest</th><th>End balance</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <p class="footnote">The rate you enter is a nominal annual rate credited at the compounding frequency you chose. This calculator ignores inflation, taxes, and fees &mdash; the Advanced Simulation models all three.</p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var el = function (id) { return document.getElementById(id); };
+
+  // ---------- tooltips ----------
+  var TIPS = {
+    start: "The lump sum you begin with today.",
+    years: "How long the money stays invested. Longer horizons compound harder &mdash; that is the whole trick.",
+    rate: "Expected annual return before inflation. U.S. stocks have averaged roughly 10% per year over the long run; 6&ndash;7% is a common conservative planning figure.",
+    compound: "How often earnings are credited to the balance. More frequent compounding nudges the effective rate up slightly.",
+    contrib: "The amount you add on a schedule, on top of the starting amount.",
+    contribFreq: "Whether the contribution happens every month or once a year.",
+    timing: "Beginning-of-period contributions earn that period's growth; end-of-period ones don't. Beginning ends slightly higher."
+  };
+  Object.keys(TIPS).forEach(function (id) {
+    var host = document.querySelector('label[for="' + id + '"]');
+    if (!host) return;
+    var tip = document.createElement("span");
+    tip.className = "tip";
+    tip.innerHTML = '<button type="button" class="tip-btn" aria-label="Explain this field">?</button>' +
+                    '<span class="tip-body" role="tooltip">' + TIPS[id] + "</span>";
+    tip.querySelector("button").addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); });
+    host.appendChild(tip);
+  });
+
+  // ---------- math ----------
+  function fmt(v) { return "$" + Math.round(v).toLocaleString("en-US"); }
+  function fmtShort(v) {
+    if (v >= 1e6) return "$" + (v / 1e6).toFixed(v >= 10e6 ? 1 : 2) + "M";
+    if (v >= 1e3) return "$" + Math.round(v / 1e3) + "k";
+    return "$" + Math.round(v);
+  }
+  function niceCeil(v) {
+    var mag = Math.pow(10, Math.floor(Math.log10(v || 1)));
+    var n = v / mag;
+    var step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 4 ? 4 : n <= 5 ? 5 : n <= 8 ? 8 : 10;
+    return step * mag;
+  }
+
+  function compute() {
+    var start = Math.max(0, +el("start").value || 0);
+    var years = Math.max(1, Math.min(60, Math.round(+el("years").value || 10)));
+    var rate = Math.max(0, Math.min(20, +el("rate").value || 0)) / 100;
+    var m = +el("compound").value;                       // compounds per year
+    var contrib = Math.max(0, +el("contrib").value || 0);
+    var perYear = el("contribFreq").value === "month" ? 12 : 1;
+    var atBegin = el("timing").value === "begin";
+    var periodRate = Math.pow(1 + rate / m, m / perYear) - 1; // effective rate per contribution period
+
+    var bal = start;
+    var rows = [];
+    var totDeposits = start, totInterest = 0;
+    for (var y = 1; y <= years; y++) {
+      var yDep = 0, yInt = 0;
+      for (var p = 0; p < perYear; p++) {
+        if (atBegin) { bal += contrib; yDep += contrib; }
+        var earned = bal * periodRate;
+        bal += earned; yInt += earned;
+        if (!atBegin) { bal += contrib; yDep += contrib; }
+      }
+      totDeposits += yDep; totInterest += yInt;
+      rows.push({ year: y, dep: yDep, interest: yInt, deposits: totDeposits, balance: bal });
+    }
+    return { start: start, years: years, rows: rows, end: bal,
+             contribTotal: totDeposits - start, interest: totInterest };
+  }
+
+  // ---------- render ----------
+  function renderHero(r) {
+    el("endBal").textContent = fmt(r.end);
+    el("endBalNote").textContent = "after " + r.years + " year" + (r.years > 1 ? "s" : "");
+    el("statStart").textContent = fmt(r.start);
+    el("statContrib").textContent = fmt(r.contribTotal);
+    el("statInterest").textContent = fmt(r.interest);
+
+    // donut
+    var svg = el("donut");
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    var ns = "http://www.w3.org/2000/svg";
+    var C = 2 * Math.PI * 46;
+    var parts = [
+      { v: r.start, color: "var(--accent)" },
+      { v: r.contribTotal, color: "var(--contrib)" },
+      { v: r.interest, color: "var(--grid)" }
+    ];
+    var total = r.end || 1;
+    var offset = 0;
+    parts.forEach(function (p) {
+      var len = Math.max(0, p.v / total) * C;
+      var c = document.createElementNS(ns, "circle");
+      c.setAttribute("cx", 60); c.setAttribute("cy", 60); c.setAttribute("r", 46);
+      c.setAttribute("fill", "none");
+      c.setAttribute("stroke", p.color);
+      c.setAttribute("stroke-width", 16);
+      c.setAttribute("stroke-dasharray", len.toFixed(1) + " " + (C - len).toFixed(1));
+      c.setAttribute("stroke-dashoffset", (-offset).toFixed(1));
+      c.setAttribute("transform", "rotate(-90 60 60)");
+      svg.appendChild(c);
+      offset += len;
+    });
+  }
+
+  var chartState = null;
+  function renderChart(r) {
+    var svg = el("growthChart");
+    var W = 880, H = 320, mL = 62, mR = 20, mT = 14, mB = 32;
+    var iw = W - mL - mR, ih = H - mT - mB;
+    var yMax = niceCeil(r.end * 1.05);
+    var x = function (i) { return mL + (i / r.years) * iw; };
+    var y = function (v) { return mT + ih - (v / yMax) * ih; };
+    var ns = "http://www.w3.org/2000/svg";
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    function add(tag, attrs) {
+      var n = document.createElementNS(ns, tag);
+      for (var k in attrs) n.setAttribute(k, attrs[k]);
+      svg.appendChild(n);
+      return n;
+    }
+    for (var g = 0; g <= 5; g++) {
+      var val = yMax * g / 5, yy = y(val);
+      add("line", { x1: mL, x2: mL + iw, y1: yy, y2: yy, stroke: g === 0 ? "var(--baseline)" : "var(--grid)", "stroke-width": 1 });
+      var t = add("text", { x: mL - 8, y: yy + 4, "text-anchor": "end", "class": "axis-text" });
+      t.textContent = fmtShort(val);
+    }
+    var step = r.years > 30 ? 10 : r.years > 12 ? 5 : 1;
+    for (var yr = 0; yr <= r.years; yr += step) {
+      var xi = x(yr);
+      add("line", { x1: xi, x2: xi, y1: mT + ih, y2: mT + ih + 4, stroke: "var(--baseline)", "stroke-width": 1 });
+      var xl = add("text", { x: xi, y: mT + ih + 18, "text-anchor": "middle", "class": "axis-text" });
+      xl.textContent = yr;
+    }
+    var xt = add("text", { x: mL + iw / 2, y: H - 2, "text-anchor": "middle", "class": "axis-text" });
+    xt.textContent = "year";
+
+    function pathFor(get) {
+      var d = "M" + x(0).toFixed(1) + " " + y(get(null, 0)).toFixed(1);
+      r.rows.forEach(function (row, i) { d += "L" + x(i + 1).toFixed(1) + " " + y(get(row, i + 1)).toFixed(1); });
+      return d;
+    }
+    var balTop = pathFor(function (row) { return row ? row.balance : r.start; });
+    var depTop = pathFor(function (row) { return row ? row.deposits : r.start; });
+    add("path", { d: balTop + "L" + x(r.years).toFixed(1) + " " + y(0) + "L" + x(0).toFixed(1) + " " + y(0) + "Z", fill: "var(--band)" });
+    add("path", { d: depTop + "L" + x(r.years).toFixed(1) + " " + y(0) + "L" + x(0).toFixed(1) + " " + y(0) + "Z", fill: "var(--contrib-band)" });
+    add("path", { d: balTop, fill: "none", stroke: "var(--accent)", "stroke-width": 2, "stroke-linejoin": "round" });
+
+    var cross = add("line", { x1: 0, x2: 0, y1: mT, y2: mT + ih, stroke: "var(--baseline)", "stroke-width": 1, visibility: "hidden" });
+    var dot = add("circle", { r: 4, fill: "var(--accent)", stroke: "var(--surface)", "stroke-width": 2, visibility: "hidden" });
+    chartState = { r: r, x: x, y: y, W: W, mL: mL, iw: iw, cross: cross, dot: dot };
+  }
+
+  function bindHover() {
+    var box = el("chartBox"), svg = el("growthChart"), tip = el("chartTip");
+    function move(clientX, clientY) {
+      if (!chartState) return;
+      var rect = svg.getBoundingClientRect();
+      var sx = (clientX - rect.left) / rect.width * chartState.W;
+      var s = chartState;
+      var i = Math.round((sx - s.mL) / s.iw * s.r.years);
+      if (i < 1 || i > s.r.years) { leave(); return; }
+      var row = s.r.rows[i - 1];
+      var px = s.x(i);
+      s.cross.setAttribute("x1", px); s.cross.setAttribute("x2", px);
+      s.cross.setAttribute("visibility", "visible");
+      s.dot.setAttribute("cx", px); s.dot.setAttribute("cy", s.y(row.balance));
+      s.dot.setAttribute("visibility", "visible");
+      tip.innerHTML =
+        '<div class="t-hd">Year ' + row.year + "</div>" +
+        '<div class="row"><span>Balance</span><span class="val">' + fmt(row.balance) + "</span></div>" +
+        '<div class="row"><span>Put in so far</span><span class="val">' + fmt(row.deposits) + "</span></div>" +
+        '<div class="row"><span>Interest so far</span><span class="val">' + fmt(row.balance - row.deposits) + "</span></div>";
+      tip.style.display = "block";
+      var bx = box.getBoundingClientRect();
+      var left = (px / s.W) * rect.width + 14;
+      if (left + tip.offsetWidth > bx.width - 4) left = left - tip.offsetWidth - 28;
+      tip.style.left = left + "px";
+      tip.style.top = Math.max(0, clientY - bx.top - tip.offsetHeight - 12) + "px";
+    }
+    function leave() {
+      tip.style.display = "none";
+      if (chartState) {
+        chartState.cross.setAttribute("visibility", "hidden");
+        chartState.dot.setAttribute("visibility", "hidden");
+      }
+    }
+    svg.addEventListener("mousemove", function (e) { move(e.clientX, e.clientY); });
+    svg.addEventListener("mouseleave", leave);
+    svg.addEventListener("touchstart", function (e) { if (e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+    svg.addEventListener("touchmove", function (e) { if (e.touches[0]) move(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+    svg.addEventListener("touchend", leave);
+  }
+
+  function renderTable(r) {
+    var tbody = el("schedTable").querySelector("tbody");
+    tbody.innerHTML = "";
+    r.rows.forEach(function (row) {
+      var tr = document.createElement("tr");
+      tr.innerHTML = "<td>" + row.year + "</td><td>" + fmt(row.dep) + "</td><td>" + fmt(row.interest) + "</td><td>" + fmt(row.balance) + "</td>";
+      tbody.appendChild(tr);
+    });
+  }
+
+  var debounceTimer = null;
+  function runAll() {
+    var r = compute();
+    renderHero(r);
+    renderChart(r);
+    renderTable(r);
+  }
+  function schedule() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(runAll, 120);
+  }
+  ["start", "years", "rate", "compound", "contrib", "contribFreq", "timing"].forEach(function (id) {
+    el(id).addEventListener("input", schedule);
+    el(id).addEventListener("change", schedule);
+  });
+
+  bindHover();
+  runAll();
+})();
+</script>

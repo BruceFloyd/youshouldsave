@@ -2,6 +2,19 @@
 
 All notable changes to Glidepath, the Monte Carlo retirement simulator.
 
+## [2.1] — 2026-08-19
+
+The single calculator becomes a three-page site for ishouldsave.com.
+
+### Added
+- **Landing page (`index.html`).** Welcomes visitors and routes them to one of two tools: the Simple Investment Calculator ("quick estimate", ~2 min) or the Advanced Simulation ("full plan", ~10 min), with a "not sure which?" guide, growth-chart hero, and shared site navigation.
+- **Simple Investment Calculator (`simple.html`).** A calculator.net-style compound growth tool: starting amount, years, return rate, compounding frequency (annual through daily), and scheduled contributions (monthly/annual, beginning/end of period). Outputs an end balance with a donut breakdown (principal / contributions / interest), a stacked growth-by-year chart with hover details, and a full accumulation schedule table.
+- **Tooltips everywhere.** Every input on both calculators carries a "?" tooltip (hover, keyboard focus, or tap) explaining the field in plain language — 31 on the advanced page, 7 on the simple one.
+- Shared site header/navigation and consistent design system (IBM Plex Sans/Mono, warm neutrals, blue accent, light/dark themes) across all pages.
+
+### Changed
+- The retirement simulator moved from `index.html` to **`advanced.html`** and is now titled **Advanced Simulation** (formerly "Glidepath"), per-page branding replaced by the I SHOULD SAVE site wordmark.
+
 ## [2.0] — 2026-08-19
 
 Major engine upgrade toward advisor-grade planning: taxes and account types, guardrails spending, stress tests, and household modeling. The generator stays advisor-simple (iid normal by default).
