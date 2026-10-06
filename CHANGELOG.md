@@ -4,8 +4,20 @@ All notable changes to Glidepath, the Monte Carlo retirement simulator.
 
 ## [Unreleased]
 
+## [2.2] — 2026-10-06
+
+### Added
+- **Withdrawals in the Simple Calculator.** An optional "Then withdraw each year" checkbox adds a drawdown phase after the growth years: an annual withdrawal amount, how many years it should last, and an optional yearly raise (about 3% keeps pace with inflation). Contributions stop when withdrawals begin; the annual amount comes out in equal monthly installments at the start of each month while the remainder keeps compounding. Setting "Years to grow" to 0 starts withdrawals immediately. In this mode the hero reports how long the money lasts (e.g. "25 yrs 1 mo of the 30 years planned") or the balance left if it lasts the full period, a "total withdrawn" stat replaces the donut, the chart runs through the withdrawal years with a dashed "withdrawals start" marker and a zero line after depletion, hover shows each year's withdrawal and running total, and the schedule table gains a Withdrawals column.
+
 ### Changed
+- **Single-total accounts in the Advanced Simulation.** Accounts & taxes now defaults to one "Total saved so far" balance (default $750,000), modeled entirely as tax-deferred — every withdrawal taxed at the ordinary rate and RMDs on the full amount, the conservative case. A "Split by account type" checkbox restores the taxable / deferred / Roth fields along with saved-into, capital-gains rate, and withdrawal order, which only matter with a split. Values carry over when switching modes: turning the split on keeps taxable and Roth and puts the remainder in deferred; turning it off sums the three into the total.
 - **Number keypad on mobile.** Every numeric input on both calculators now sets `inputmode`, so phones open a digits-only keypad instead of the full keyboard. Fields that take fractional values (return rate, healthcare growth, fund fee) get the decimal keypad; the rest get the plain number pad.
+
+### Fixed
+- Hint text placed outside a form field ("Balances today, in dollars" on the advanced page; "Results update as you type" on the simple page) rendered at full body size instead of the small muted hint style.
+
+### Impact (advanced default plan)
+- Success probability 98% → 96%, because the default $750k is now treated as all tax-deferred instead of the previous $150k / $500k / $100k split. Turning the split on reproduces the old 98%.
 
 ## [2.1] — 2026-08-19
 
