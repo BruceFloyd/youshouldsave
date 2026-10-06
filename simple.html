@@ -125,8 +125,12 @@
   .rail { display: flex; flex-direction: column; gap: 16px; }
   .field { display: flex; flex-direction: column; gap: 5px; }
   .field label { font-size: 13px; font-weight: 600; color: var(--ink); display: inline-flex; align-items: center; gap: 6px; }
-  .field .hint { font-size: 12px; color: var(--muted); }
+  .hint { font-size: 12px; color: var(--muted); }
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .check-row { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
+  .check-row input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; margin: 0; }
+  body:not(.wd) .wd-only { display: none !important; }
+  body.wd .wd-hide { display: none !important; }
   input[type="number"], select {
     width: 100%;
     font: 500 14px "IBM Plex Mono", ui-monospace, Menlo, monospace;
@@ -233,7 +237,7 @@
       </div>
       <div class="field">
         <label for="years">Years to grow</label>
-        <input type="number" inputmode="numeric" id="years" value="10" min="1" max="60" step="1">
+        <input type="number" inputmode="numeric" id="years" value="10" min="0" max="60" step="1">
       </div>
       <div class="field-row">
         <div class="field">
@@ -271,32 +275,49 @@
           </select>
         </div>
       </div>
+      <label class="check-row" style="border-top: 1px solid var(--grid); padding-top: 14px;"><input type="checkbox" id="withdraw"> Then withdraw each year</label>
+      <div class="field-row wd-only">
+        <div class="field">
+          <label for="wdAmt">Withdraw ($/yr)</label>
+          <input type="number" inputmode="numeric" id="wdAmt" value="15000" min="0" step="1000">
+        </div>
+        <div class="field">
+          <label for="wdYears">For (years)</label>
+          <input type="number" inputmode="numeric" id="wdYears" value="30" min="1" max="60" step="1">
+        </div>
+      </div>
+      <div class="field wd-only">
+        <label for="wdRaise">Raise each year %</label>
+        <input type="number" inputmode="decimal" id="wdRaise" value="0" min="0" max="10" step="0.5">
+        <span class="hint">Contributions stop when withdrawals begin. Use about 3% to keep pace with inflation.</span>
+      </div>
       <p class="hint" style="margin:0; border-top: 1px solid var(--grid); padding-top: 12px;">Results update as you type. For inflation, taxes, retirement spending, and market ups and downs, use the <a href="advanced.html" style="color:var(--accent-ink)">Advanced Simulation</a>.</p>
     </form>
 
     <div class="results">
       <section class="panel">
-        <p class="eyebrow">End balance</p>
+        <p class="eyebrow" id="heroLabel">End balance</p>
         <div class="hero">
           <div>
             <p class="hero-num" id="endBal">&mdash;</p>
             <p class="footnote" id="endBalNote" style="margin-top:6px"></p>
           </div>
-          <svg id="donut" width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Breakdown of the end balance into starting amount, contributions, and interest"></svg>
+          <svg id="donut" class="wd-hide" width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Breakdown of the end balance into starting amount, contributions, and interest"></svg>
           <div class="hero-side">
             <div class="stat k-start"><div class="v" id="statStart">&mdash;</div><div class="k">starting amount</div></div>
             <div class="stat k-contrib"><div class="v" id="statContrib">&mdash;</div><div class="k">total contributions</div></div>
             <div class="stat"><div class="v" id="statInterest">&mdash;</div><div class="k">total interest earned</div></div>
+            <div class="stat k-wd wd-only"><div class="v" id="statWithdrawn">&mdash;</div><div class="k">total withdrawn</div></div>
           </div>
         </div>
       </section>
 
       <section class="panel">
         <div class="chart-head">
-          <p class="eyebrow" style="margin:0">Growth by year</p>
+          <p class="eyebrow" style="margin:0" id="chartLabel">Growth by year</p>
           <div class="legend">
             <span class="key"><span class="band-key" style="background:var(--contrib-band)"></span>Money you put in</span>
-            <span class="key"><span class="band-key" style="background:var(--band)"></span>Interest earned</span>
+            <span class="key"><span class="band-key" style="background:var(--band)"></span><span id="bandLabel">Interest earned</span></span>
           </div>
         </div>
         <div class="chart-box" id="chartBox">
@@ -306,14 +327,14 @@
       </section>
 
       <section class="panel">
-        <p class="eyebrow">Accumulation schedule</p>
+        <p class="eyebrow" id="tableLabel">Accumulation schedule</p>
         <div class="table-scroll">
           <table class="sched" id="schedTable">
-            <thead><tr><th>Year</th><th>Deposits</th><th>Interest</th><th>End balance</th></tr></thead>
+            <thead><tr><th>Year</th><th>Deposits</th><th>Interest</th><th class="wd-only">Withdrawals</th><th>End balance</th></tr></thead>
             <tbody></tbody>
           </table>
         </div>
-        <p class="footnote">The rate you enter is a nominal annual rate credited at the compounding frequency you chose. This calculator ignores inflation, taxes, and fees &mdash; the Advanced Simulation models all three.</p>
+        <p class="footnote">The rate you enter is a nominal annual rate credited at the compounding frequency you chose. Withdrawals come out in equal monthly amounts at the start of each month. This calculator ignores inflation, taxes, and fees &mdash; the Advanced Simulation models all three.</p>
       </section>
     </div>
   </div>
@@ -333,7 +354,10 @@
     compound: "How often earnings are credited to the balance. More frequent compounding nudges the effective rate up slightly.",
     contrib: "The amount you add on a schedule, on top of the starting amount.",
     contribFreq: "Whether the contribution happens every month or once a year.",
-    timing: "Beginning-of-period contributions earn that period's growth; end-of-period ones don't. Beginning ends slightly higher."
+    timing: "Beginning-of-period contributions earn that period's growth; end-of-period ones don't. Beginning ends slightly higher.",
+    wdAmt: "How much you take out each year once the growth years end. It comes out in equal monthly amounts, and the rest keeps earning the same return.",
+    wdYears: "How many years you want the withdrawals to last.",
+    wdRaise: "Grows the withdrawal by this much each year. Around 3% keeps your spending power roughly level with inflation."
   };
   Object.keys(TIPS).forEach(function (id) {
     var host = document.querySelector('label[for="' + id + '"]');
@@ -362,7 +386,9 @@
 
   function compute() {
     var start = Math.max(0, +el("start").value || 0);
-    var years = Math.max(1, Math.min(60, Math.round(+el("years").value || 10)));
+    var wdOn = el("withdraw").checked;
+    var yv = el("years").value;
+    var years = Math.max(wdOn ? 0 : 1, Math.min(60, yv === "" ? 10 : Math.round(+yv)));
     var rate = Math.max(0, Math.min(20, +el("rate").value || 0)) / 100;
     var m = +el("compound").value;                       // compounds per year
     var contrib = Math.max(0, +el("contrib").value || 0);
@@ -382,21 +408,64 @@
         if (!atBegin) { bal += contrib; yDep += contrib; }
       }
       totDeposits += yDep; totInterest += yInt;
-      rows.push({ year: y, dep: yDep, interest: yInt, deposits: totDeposits, balance: bal });
+      rows.push({ year: y, dep: yDep, interest: yInt, wd: 0, deposits: totDeposits, withdrawn: 0, balance: bal });
     }
+
+    // Withdrawal phase: contributions stop; the annual amount comes out monthly at the start of each month.
+    var wdBalStart = bal, withdrawn = 0, monthsPaid = null;
+    var wdYears = Math.max(1, Math.min(60, Math.round(+el("wdYears").value || 30)));
+    if (wdOn) {
+      var annual = Math.max(0, +el("wdAmt").value || 0);
+      var raise = Math.max(0, Math.min(10, +el("wdRaise").value || 0)) / 100;
+      var mRate = Math.pow(1 + rate / m, m / 12) - 1;
+      for (var k = 1; k <= wdYears && monthsPaid === null; k++) {
+        var yW = 0, yI = 0, need = annual / 12;
+        for (var mo = 0; mo < 12; mo++) {
+          if (bal < need) { yW += bal; bal = 0; monthsPaid = (k - 1) * 12 + mo; break; }
+          bal -= need; yW += need;
+          var e = bal * mRate;
+          bal += e; yI += e;
+        }
+        withdrawn += yW; totInterest += yI;
+        rows.push({ year: years + k, dep: 0, interest: yI, wd: yW, deposits: totDeposits, withdrawn: withdrawn, balance: bal });
+        annual *= 1 + raise;
+      }
+    }
+    var peak = start;
+    rows.forEach(function (row) { if (row.balance > peak) peak = row.balance; });
     return { start: start, years: years, rows: rows, end: bal,
-             contribTotal: totDeposits - start, interest: totInterest };
+             contribTotal: totDeposits - start, interest: totInterest,
+             wdOn: wdOn, wdYears: wdYears, wdBalStart: wdBalStart, withdrawn: withdrawn,
+             monthsPaid: monthsPaid, horizon: years + (wdOn ? wdYears : 0), peak: peak };
   }
 
   // ---------- render ----------
   function renderHero(r) {
-    el("endBal").textContent = fmt(r.end);
-    el("endBalNote").textContent = "after " + r.years + " year" + (r.years > 1 ? "s" : "");
     el("statStart").textContent = fmt(r.start);
     el("statContrib").textContent = fmt(r.contribTotal);
     el("statInterest").textContent = fmt(r.interest);
+    el("statWithdrawn").textContent = fmt(r.withdrawn);
+    var yrs = function (n) { return n + " year" + (n === 1 ? "" : "s"); };
+    if (!r.wdOn) {
+      el("heroLabel").textContent = "End balance";
+      el("endBal").textContent = fmt(r.end);
+      el("endBalNote").textContent = "after " + yrs(r.years);
+      return;
+    }
+    var from = r.years > 0 ? "Withdrawals start from " + fmt(r.wdBalStart) + " after " + yrs(r.years) + " of growth." : "";
+    if (r.monthsPaid === null) {
+      el("heroLabel").textContent = "Left after withdrawals";
+      el("endBal").textContent = fmt(r.end);
+      el("endBalNote").textContent = "The money lasts all " + yrs(r.wdYears) + ". " + from;
+    } else {
+      var ly = Math.floor(r.monthsPaid / 12), lm = r.monthsPaid % 12;
+      el("heroLabel").textContent = "Money lasts";
+      el("endBal").textContent = ly + " yr" + (ly === 1 ? "" : "s") + (lm ? " " + lm + " mo" : "");
+      el("endBalNote").textContent = "of the " + yrs(r.wdYears) + " planned. " + from;
+    }
 
     // donut
+    if (r.wdOn) return;
     var svg = el("donut");
     while (svg.firstChild) svg.removeChild(svg.firstChild);
     var ns = "http://www.w3.org/2000/svg";
@@ -428,8 +497,8 @@
     var svg = el("growthChart");
     var W = 880, H = 320, mL = 62, mR = 20, mT = 14, mB = 32;
     var iw = W - mL - mR, ih = H - mT - mB;
-    var yMax = niceCeil(r.end * 1.05);
-    var x = function (i) { return mL + (i / r.years) * iw; };
+    var yMax = niceCeil(r.peak * 1.05);
+    var x = function (i) { return mL + (i / r.horizon) * iw; };
     var y = function (v) { return mT + ih - (v / yMax) * ih; };
     var ns = "http://www.w3.org/2000/svg";
     while (svg.firstChild) svg.removeChild(svg.firstChild);
@@ -445,8 +514,8 @@
       var t = add("text", { x: mL - 8, y: yy + 4, "text-anchor": "end", "class": "axis-text" });
       t.textContent = fmtShort(val);
     }
-    var step = r.years > 30 ? 10 : r.years > 12 ? 5 : 1;
-    for (var yr = 0; yr <= r.years; yr += step) {
+    var step = r.horizon > 30 ? 10 : r.horizon > 12 ? 5 : 1;
+    for (var yr = 0; yr <= r.horizon; yr += step) {
       var xi = x(yr);
       add("line", { x1: xi, x2: xi, y1: mT + ih, y2: mT + ih + 4, stroke: "var(--baseline)", "stroke-width": 1 });
       var xl = add("text", { x: xi, y: mT + ih + 18, "text-anchor": "middle", "class": "axis-text" });
@@ -455,16 +524,26 @@
     var xt = add("text", { x: mL + iw / 2, y: H - 2, "text-anchor": "middle", "class": "axis-text" });
     xt.textContent = "year";
 
-    function pathFor(get) {
-      var d = "M" + x(0).toFixed(1) + " " + y(get(null, 0)).toFixed(1);
-      r.rows.forEach(function (row, i) { d += "L" + x(i + 1).toFixed(1) + " " + y(get(row, i + 1)).toFixed(1); });
+    function pathFor(rows, get) {
+      var d = "M" + x(0).toFixed(1) + " " + y(r.start).toFixed(1);
+      rows.forEach(function (row) { d += "L" + x(row.year).toFixed(1) + " " + y(get(row)).toFixed(1); });
       return d;
     }
-    var balTop = pathFor(function (row) { return row ? row.balance : r.start; });
-    var depTop = pathFor(function (row) { return row ? row.deposits : r.start; });
-    add("path", { d: balTop + "L" + x(r.years).toFixed(1) + " " + y(0) + "L" + x(0).toFixed(1) + " " + y(0) + "Z", fill: "var(--band)" });
-    add("path", { d: depTop + "L" + x(r.years).toFixed(1) + " " + y(0) + "L" + x(0).toFixed(1) + " " + y(0) + "Z", fill: "var(--contrib-band)" });
+    // If the money runs out early, carry the balance line along zero to the end of the plan.
+    var lastYear = r.rows.length ? r.rows[r.rows.length - 1].year : 0;
+    var tail = lastYear < r.horizon ? "L" + x(r.horizon).toFixed(1) + " " + y(0).toFixed(1) : "";
+    var balTop = pathFor(r.rows, function (row) { return row.balance; }) + tail;
+    add("path", { d: balTop + "L" + x(r.horizon).toFixed(1) + " " + y(0) + "L" + x(0).toFixed(1) + " " + y(0) + "Z", fill: "var(--band)" });
+    if (r.years > 0) {
+      var depTop = pathFor(r.rows.slice(0, r.years), function (row) { return row.deposits; });
+      add("path", { d: depTop + "L" + x(r.years).toFixed(1) + " " + y(0) + "L" + x(0).toFixed(1) + " " + y(0) + "Z", fill: "var(--contrib-band)" });
+    }
     add("path", { d: balTop, fill: "none", stroke: "var(--accent)", "stroke-width": 2, "stroke-linejoin": "round" });
+    if (r.wdOn && r.years > 0) {
+      add("line", { x1: x(r.years), x2: x(r.years), y1: mT, y2: mT + ih, stroke: "var(--ink-2)", "stroke-width": 1, "stroke-dasharray": "4 4" });
+      var wl = add("text", { x: x(r.years) + 6, y: mT + 10, "class": "axis-text" });
+      wl.textContent = "withdrawals start";
+    }
 
     var cross = add("line", { x1: 0, x2: 0, y1: mT, y2: mT + ih, stroke: "var(--baseline)", "stroke-width": 1, visibility: "hidden" });
     var dot = add("circle", { r: 4, fill: "var(--accent)", stroke: "var(--surface)", "stroke-width": 2, visibility: "hidden" });
@@ -478,19 +557,21 @@
       var rect = svg.getBoundingClientRect();
       var sx = (clientX - rect.left) / rect.width * chartState.W;
       var s = chartState;
-      var i = Math.round((sx - s.mL) / s.iw * s.r.years);
-      if (i < 1 || i > s.r.years) { leave(); return; }
+      var i = Math.round((sx - s.mL) / s.iw * s.r.horizon);
+      if (i < 1 || i > s.r.rows.length) { leave(); return; }
       var row = s.r.rows[i - 1];
       var px = s.x(i);
       s.cross.setAttribute("x1", px); s.cross.setAttribute("x2", px);
       s.cross.setAttribute("visibility", "visible");
       s.dot.setAttribute("cx", px); s.dot.setAttribute("cy", s.y(row.balance));
       s.dot.setAttribute("visibility", "visible");
-      tip.innerHTML =
-        '<div class="t-hd">Year ' + row.year + "</div>" +
+      tip.innerHTML = '<div class="t-hd">Year ' + row.year + "</div>" +
         '<div class="row"><span>Balance</span><span class="val">' + fmt(row.balance) + "</span></div>" +
-        '<div class="row"><span>Put in so far</span><span class="val">' + fmt(row.deposits) + "</span></div>" +
-        '<div class="row"><span>Interest so far</span><span class="val">' + fmt(row.balance - row.deposits) + "</span></div>";
+        (row.year > s.r.years
+          ? '<div class="row"><span>Withdrawn this year</span><span class="val">' + fmt(row.wd) + "</span></div>" +
+            '<div class="row"><span>Withdrawn so far</span><span class="val">' + fmt(row.withdrawn) + "</span></div>"
+          : '<div class="row"><span>Put in so far</span><span class="val">' + fmt(row.deposits) + "</span></div>" +
+            '<div class="row"><span>Interest so far</span><span class="val">' + fmt(row.balance - row.deposits) + "</span></div>");
       tip.style.display = "block";
       var bx = box.getBoundingClientRect();
       var left = (px / s.W) * rect.width + 14;
@@ -517,7 +598,8 @@
     tbody.innerHTML = "";
     r.rows.forEach(function (row) {
       var tr = document.createElement("tr");
-      tr.innerHTML = "<td>" + row.year + "</td><td>" + fmt(row.dep) + "</td><td>" + fmt(row.interest) + "</td><td>" + fmt(row.balance) + "</td>";
+      tr.innerHTML = "<td>" + row.year + "</td><td>" + fmt(row.dep) + "</td><td>" + fmt(row.interest) + "</td>" +
+                     (r.wdOn ? "<td>" + fmt(row.wd) + "</td>" : "") + "<td>" + fmt(row.balance) + "</td>";
       tbody.appendChild(tr);
     });
   }
@@ -525,6 +607,10 @@
   var debounceTimer = null;
   function runAll() {
     var r = compute();
+    document.body.classList.toggle("wd", r.wdOn);
+    el("chartLabel").textContent = r.wdOn ? "Balance by year" : "Growth by year";
+    el("bandLabel").textContent = r.wdOn ? "Interest earned / balance left" : "Interest earned";
+    el("tableLabel").textContent = r.wdOn ? "Year-by-year schedule" : "Accumulation schedule";
     renderHero(r);
     renderChart(r);
     renderTable(r);
@@ -533,7 +619,8 @@
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(runAll, 120);
   }
-  ["start", "years", "rate", "compound", "contrib", "contribFreq", "timing"].forEach(function (id) {
+  ["start", "years", "rate", "compound", "contrib", "contribFreq", "timing",
+   "withdraw", "wdAmt", "wdYears", "wdRaise"].forEach(function (id) {
     el(id).addEventListener("input", schedule);
     el(id).addEventListener("change", schedule);
   });
