@@ -188,7 +188,7 @@
   .rail { display: flex; flex-direction: column; gap: 4px; }
   .field { display: flex; flex-direction: column; gap: 5px; }
   .field label { font-size: 13px; font-weight: 600; color: var(--ink); }
-  .field .hint { font-size: 12px; color: var(--muted); }
+  .hint { font-size: 12px; color: var(--muted); }
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .field-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
   input[type="number"], select {
@@ -228,6 +228,10 @@
   .joint-only { display: none !important; }
   form.joint .joint-only { display: grid !important; }
   form.joint .joint-only.field { display: flex !important; }
+  .split-only { display: none !important; }
+  form.split .split-only { display: grid !important; }
+  form.split .split-only.field, form.split span.split-only { display: flex !important; }
+  form.split .split-off { display: none !important; }
   .alloc-bar {
     display: flex; height: 10px; border-radius: 5px; overflow: hidden; gap: 2px;
     background: var(--page); margin-top: 4px;
@@ -417,7 +421,13 @@
       <details class="sect" open>
         <summary>Accounts &amp; taxes</summary>
         <div class="sect-body">
-          <div class="field-row-3">
+          <div class="field split-off">
+            <label for="total">Total saved so far ($)</label>
+            <input type="number" inputmode="numeric" id="total" value="750000" min="0" step="10000">
+            <span class="hint">Treated as pre-tax 401(k)/IRA money &mdash; the conservative case.</span>
+          </div>
+          <label class="check-row"><input type="checkbox" id="split"> Split by account type</label>
+          <div class="field-row-3 split-only">
             <div class="field">
               <label for="taxable">Taxable</label>
               <input type="number" inputmode="numeric" id="taxable" value="150000" min="0" step="10000">
@@ -431,13 +441,13 @@
               <input type="number" inputmode="numeric" id="roth" value="100000" min="0" step="10000">
             </div>
           </div>
-          <span class="hint" style="margin-top:-8px">Balances today, in dollars.</span>
+          <span class="hint split-only" style="margin-top:-8px">Balances today, in dollars.</span>
           <div class="field-row">
             <div class="field">
               <label for="savings">Saved per year ($)</label>
               <input type="number" inputmode="numeric" id="savings" value="30000" min="0" step="1000">
             </div>
-            <div class="field">
+            <div class="field split-only">
               <label for="saveTo">Saved into</label>
               <select id="saveTo">
                 <option value="d" selected>Tax-deferred</option>
@@ -445,18 +455,16 @@
                 <option value="r">Roth</option>
               </select>
             </div>
-          </div>
-          <div class="field-row">
             <div class="field">
               <label for="ord">Ordinary rate %</label>
               <input type="number" inputmode="numeric" id="ord" value="22" min="0" max="50" step="1">
             </div>
-            <div class="field">
+            <div class="field split-only">
               <label for="cg">Cap-gains rate %</label>
               <input type="number" inputmode="numeric" id="cg" value="15" min="0" max="40" step="1">
             </div>
           </div>
-          <div class="field">
+          <div class="field split-only">
             <label for="wOrder">Withdrawal order</label>
             <select id="wOrder">
               <option value="tdr" selected>Taxable &rarr; Deferred &rarr; Roth</option>
@@ -663,7 +671,7 @@
         <h3>Returns</h3>
         <p>Annual returns are drawn iid from a normal distribution (or Student-t in research mode). The planning default for stocks is <span class="mono">6.8%</span> real mean / <span class="mono">17.2%</span> SD &mdash; a deliberately conservative forward capital-market assumption, below the roughly <span class="mono">7.8%</span> historical arithmetic mean of U.S. equities, which is available as a research toggle. Bonds <span class="mono">2.0%</span> / <span class="mono">6.5%</span>; cash <span class="mono">0.5%</span> / <span class="mono">1.0%</span> (stylized low-vol); stock&ndash;bond correlation <span class="mono">0.10</span> in the base, <span class="mono">0.40</span> in the stress row. The annual fee is subtracted from returns before cash flows. iid draws understate long slumps and momentum; the historical replays exist to show what iid sampling hides.</p>
         <h3>Taxes &amp; accounts</h3>
-        <p>Three buckets (taxable, tax-deferred, Roth) share one allocation and rebalance annually. Withdrawals are grossed up for tax: deferred at your ordinary rate, taxable at your capital-gains rate assuming <span class="mono">50%</span> of each withdrawal is gain (basis is not tracked), Roth tax-free. RMDs start at <span class="mono">73</span> or <span class="mono">75</span> by birth year (SECURE 2.0, computed automatically) using the Uniform Lifetime Table; net RMD proceeds beyond spending are reinvested in taxable. Real tax brackets are nominal and progressive; flat rates in a real model are an approximation.</p>
+        <p>With a single total, all savings are modeled as tax-deferred. Split out, three buckets (taxable, tax-deferred, Roth) share one allocation and rebalance annually. Withdrawals are grossed up for tax: deferred at your ordinary rate, taxable at your capital-gains rate assuming <span class="mono">50%</span> of each withdrawal is gain (basis is not tracked), Roth tax-free. RMDs start at <span class="mono">73</span> or <span class="mono">75</span> by birth year (SECURE 2.0, computed automatically) using the Uniform Lifetime Table; net RMD proceeds beyond spending are reinvested in taxable. Real tax brackets are nominal and progressive; flat rates in a real model are an approximation.</p>
         <h3>Income &amp; spending</h3>
         <p>Social Security is a real annuity from the claiming age; the model assumes full CPI-W COLA, and CPI-W does not perfectly match retiree household inflation. The optional trim scenario multiplies benefits by <span class="mono">0.85</span> from a chosen year. For couples, the survivor keeps the larger check (once past their own claiming age &mdash; an approximation) and spending falls to the survivor factor. Guardrails cut spending by the slider amount when the current withdrawal rate breaches 120% of its starting level and restore below 80%; cuts are sticky until recovery and never take spending below <span class="mono">70%</span> of plan. Because guardrails adapt, ruin gets rare &mdash; read the &ldquo;trials that cut spending&rdquo; stat alongside the success rate. The smile option trims real spending 1%/yr past the chosen age. Healthcare is a flat extra line from 65 growing faster than CPI &mdash; IRMAA brackets are not modeled. Cash flows land at year-end, which is slightly optimistic.</p>
         <h3>Known optimistic simplifications</h3>
@@ -943,17 +951,19 @@
     var b = Math.max(0, Math.min(100 - s, Math.round(+el("bonds").value)));
     if (+el("bonds").value !== b) el("bonds").value = b;
     var retMode = el("retMode").value;
+    var split = el("split").checked;
     var endAge = planAge;
     if (joint) endAge = Math.max(planAge, curAge + (spPlanAge - spAge));
     return {
       curAge: curAge, retAge: retAge, planAge: planAge, endAge: endAge,
       joint: joint, spAge: spAge, spPlanAge: spPlanAge,
       survFactor: Math.max(50, Math.min(100, Math.round(+el("survFactor").value))) / 100,
-      taxable: Math.max(0, +el("taxable").value || 0),
-      deferred: Math.max(0, +el("deferred").value || 0),
-      roth: Math.max(0, +el("roth").value || 0),
+      split: split,
+      taxable: split ? Math.max(0, +el("taxable").value || 0) : 0,
+      deferred: split ? Math.max(0, +el("deferred").value || 0) : Math.max(0, +el("total").value || 0),
+      roth: split ? Math.max(0, +el("roth").value || 0) : 0,
       savings: Math.max(0, +el("savings").value || 0),
-      saveTo: el("saveTo").value,
+      saveTo: split ? el("saveTo").value : "d",
       ord: Math.max(0, Math.min(50, +el("ord").value || 0)) / 100,
       cg: Math.max(0, Math.min(40, +el("cg").value || 0)) / 100,
       order: el("wOrder").value,
@@ -991,6 +1001,7 @@
     el("flexOut").textContent = Math.round(p.cut * 100) + "%";
     el("survOut").textContent = Math.round(p.survFactor * 100) + "%";
     el("controls").classList.toggle("joint", p.joint);
+    el("controls").classList.toggle("split", p.split);
     var mu = p.ws * p.muS + p.wb * MU_B + p.wc * MU_C - p.fee;
     var varP = Math.pow(p.ws * p.sigS, 2) + Math.pow(p.wb * SIG_B, 2) + Math.pow(p.wc * SIG_C, 2) +
                2 * p.ws * p.sigS * p.wb * SIG_B * p.rho;
@@ -1259,6 +1270,8 @@
     spAge: "Your spouse's or partner's age today.",
     spPlanAge: "The age the spouse's plan runs through. The household horizon is the later of the two.",
     survFactor: "After the first death, household spending drops to this percentage &mdash; one person spends less than two.",
+    total: "Everything you've saved for retirement, in today's dollars. Modeled as pre-tax money: every withdrawal is taxed at your ordinary rate and RMDs apply, so it's the conservative case if some of it is Roth or brokerage.",
+    split: "Enter taxable, tax-deferred, and Roth balances separately so taxes, RMDs, and withdrawal order are modeled per account.",
     taxable: "Brokerage and bank money. Withdrawals are taxed at your capital-gains rate, assuming half of each withdrawal is gain.",
     deferred: "Traditional 401(k) and IRA money. Withdrawals are taxed as ordinary income, and required minimum distributions apply in your 70s.",
     roth: "Roth IRA and Roth 401(k) money. Withdrawals are tax-free.",
@@ -1315,8 +1328,20 @@
     debounceTimer = setTimeout(runAll, 180);
   }
 
+  // Keep the total and the three-way split consistent when switching modes.
+  el("split").addEventListener("change", function () {
+    var t = Math.max(0, +el("taxable").value || 0), r = Math.max(0, +el("roth").value || 0);
+    var total = Math.max(0, +el("total").value || 0);
+    if (el("split").checked) {
+      if (t + r > total) { t = 0; r = 0; el("taxable").value = 0; el("roth").value = 0; }
+      el("deferred").value = total - t - r;
+    } else {
+      el("total").value = t + r + Math.max(0, +el("deferred").value || 0);
+    }
+  });
+
   ["curAge", "retAge", "planAge", "joint", "spAge", "spPlanAge", "survFactor",
-   "taxable", "deferred", "roth", "savings", "saveTo", "ord", "cg", "wOrder",
+   "total", "split", "taxable", "deferred", "roth", "savings", "saveTo", "ord", "cg", "wOrder",
    "ss", "ssAge", "spSS", "spSSAge", "haircut", "haircutYear",
    "spend", "rule", "flex", "smile", "smileAge", "hc", "hcGrow",
    "stocks", "bonds", "fee", "retMode", "dist"].forEach(function (id) {
