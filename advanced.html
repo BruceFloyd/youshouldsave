@@ -380,27 +380,27 @@
           <div class="field-row">
             <div class="field">
               <label for="curAge">Current age</label>
-              <input type="number" id="curAge" value="45" min="18" max="80" step="1">
+              <input type="number" inputmode="numeric" id="curAge" value="45" min="18" max="80" step="1">
             </div>
             <div class="field">
               <label for="retAge">Retire at</label>
-              <input type="number" id="retAge" value="65" min="30" max="85" step="1">
+              <input type="number" inputmode="numeric" id="retAge" value="65" min="30" max="85" step="1">
             </div>
           </div>
           <div class="field">
             <label for="planAge">Plan through age</label>
-            <input type="number" id="planAge" value="95" min="70" max="110" step="1">
+            <input type="number" inputmode="numeric" id="planAge" value="95" min="70" max="110" step="1">
             <span class="hint">Money must last this long to count as a success.</span>
           </div>
           <label class="check-row"><input type="checkbox" id="joint"> Joint plan (two people)</label>
           <div class="field-row joint-only">
             <div class="field">
               <label for="spAge">Spouse age</label>
-              <input type="number" id="spAge" value="45" min="18" max="90" step="1">
+              <input type="number" inputmode="numeric" id="spAge" value="45" min="18" max="90" step="1">
             </div>
             <div class="field">
               <label for="spPlanAge">Spouse plan-to</label>
-              <input type="number" id="spPlanAge" value="90" min="70" max="110" step="1">
+              <input type="number" inputmode="numeric" id="spPlanAge" value="90" min="70" max="110" step="1">
             </div>
           </div>
           <div class="field joint-only">
@@ -420,22 +420,22 @@
           <div class="field-row-3">
             <div class="field">
               <label for="taxable">Taxable</label>
-              <input type="number" id="taxable" value="150000" min="0" step="10000">
+              <input type="number" inputmode="numeric" id="taxable" value="150000" min="0" step="10000">
             </div>
             <div class="field">
               <label for="deferred">Deferred</label>
-              <input type="number" id="deferred" value="500000" min="0" step="10000">
+              <input type="number" inputmode="numeric" id="deferred" value="500000" min="0" step="10000">
             </div>
             <div class="field">
               <label for="roth">Roth</label>
-              <input type="number" id="roth" value="100000" min="0" step="10000">
+              <input type="number" inputmode="numeric" id="roth" value="100000" min="0" step="10000">
             </div>
           </div>
           <span class="hint" style="margin-top:-8px">Balances today, in dollars.</span>
           <div class="field-row">
             <div class="field">
               <label for="savings">Saved per year ($)</label>
-              <input type="number" id="savings" value="30000" min="0" step="1000">
+              <input type="number" inputmode="numeric" id="savings" value="30000" min="0" step="1000">
             </div>
             <div class="field">
               <label for="saveTo">Saved into</label>
@@ -449,11 +449,11 @@
           <div class="field-row">
             <div class="field">
               <label for="ord">Ordinary rate %</label>
-              <input type="number" id="ord" value="22" min="0" max="50" step="1">
+              <input type="number" inputmode="numeric" id="ord" value="22" min="0" max="50" step="1">
             </div>
             <div class="field">
               <label for="cg">Cap-gains rate %</label>
-              <input type="number" id="cg" value="15" min="0" max="40" step="1">
+              <input type="number" inputmode="numeric" id="cg" value="15" min="0" max="40" step="1">
             </div>
           </div>
           <div class="field">
@@ -474,25 +474,25 @@
           <div class="field-row">
             <div class="field">
               <label for="ss">Benefit ($/yr)</label>
-              <input type="number" id="ss" value="24000" min="0" step="1000">
+              <input type="number" inputmode="numeric" id="ss" value="24000" min="0" step="1000">
             </div>
             <div class="field">
               <label for="ssAge">Claim at</label>
-              <input type="number" id="ssAge" value="67" min="62" max="70" step="1">
+              <input type="number" inputmode="numeric" id="ssAge" value="67" min="62" max="70" step="1">
             </div>
           </div>
           <div class="field-row joint-only">
             <div class="field">
               <label for="spSS">Spouse ($/yr)</label>
-              <input type="number" id="spSS" value="18000" min="0" step="1000">
+              <input type="number" inputmode="numeric" id="spSS" value="18000" min="0" step="1000">
             </div>
             <div class="field">
               <label for="spSSAge">Claims at</label>
-              <input type="number" id="spSSAge" value="67" min="62" max="70" step="1">
+              <input type="number" inputmode="numeric" id="spSSAge" value="67" min="62" max="70" step="1">
             </div>
           </div>
           <label class="check-row"><input type="checkbox" id="haircut"> Trim benefits to 85% from
-            <input type="number" id="haircutYear" value="2034" min="2026" max="2060" step="1" style="width:84px"></label>
+            <input type="number" inputmode="numeric" id="haircutYear" value="2034" min="2026" max="2060" step="1" style="width:84px"></label>
           <span class="hint">Trust-fund scenario. The stress panel below always shows its effect either way.</span>
         </div>
       </details>
@@ -502,7 +502,7 @@
         <div class="sect-body">
           <div class="field">
             <label for="spend">Spent per year in retirement ($)</label>
-            <input type="number" id="spend" value="80000" min="0" step="1000">
+            <input type="number" inputmode="numeric" id="spend" value="80000" min="0" step="1000">
             <span class="hint">Today's dollars, before taxes. Taxes are added on top when funding it.</span>
           </div>
           <div class="field">
@@ -522,15 +522,15 @@
             <span class="hint">Guardrails: cut when the withdrawal rate runs 20% above its starting level; restore when it falls 20% below. Cuts floor at 70% of plan.</span>
           </div>
           <label class="check-row"><input type="checkbox" id="smile"> Spending smile: &minus;1%/yr real after age
-            <input type="number" id="smileAge" value="75" min="65" max="90" step="1" style="width:70px"></label>
+            <input type="number" inputmode="numeric" id="smileAge" value="75" min="65" max="90" step="1" style="width:70px"></label>
           <div class="field-row">
             <div class="field">
               <label for="hc">Healthcare ($/yr)</label>
-              <input type="number" id="hc" value="7000" min="0" step="500">
+              <input type="number" inputmode="numeric" id="hc" value="7000" min="0" step="500">
             </div>
             <div class="field">
               <label for="hcGrow">Grows %/yr real</label>
-              <input type="number" id="hcGrow" value="1.5" min="0" max="5" step="0.5">
+              <input type="number" inputmode="decimal" id="hcGrow" value="1.5" min="0" max="5" step="0.5">
             </div>
           </div>
           <span class="hint" style="margin-top:-8px">Added on top of spending from age 65. A flat line, not IRMAA brackets.</span>
@@ -564,7 +564,7 @@
           </div>
           <div class="field">
             <label for="fee">Annual fee / drag %</label>
-            <input type="number" id="fee" value="0.20" min="0" max="3" step="0.05">
+            <input type="number" inputmode="decimal" id="fee" value="0.20" min="0" max="3" step="0.05">
           </div>
         </div>
       </details>

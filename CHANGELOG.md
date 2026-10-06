@@ -2,6 +2,11 @@
 
 All notable changes to Glidepath, the Monte Carlo retirement simulator.
 
+## [Unreleased]
+
+### Changed
+- **Number keypad on mobile.** Every numeric input on both calculators now sets `inputmode`, so phones open a digits-only keypad instead of the full keyboard. Fields that take fractional values (return rate, healthcare growth, fund fee) get the decimal keypad; the rest get the plain number pad.
+
 ## [2.1] — 2026-08-19
 
 The single calculator becomes a three-page site for ishouldsave.com.

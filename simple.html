@@ -229,16 +229,16 @@
     <form class="panel rail" id="controls" onsubmit="return false">
       <div class="field">
         <label for="start">Starting amount ($)</label>
-        <input type="number" id="start" value="20000" min="0" step="1000">
+        <input type="number" inputmode="numeric" id="start" value="20000" min="0" step="1000">
       </div>
       <div class="field">
         <label for="years">Years to grow</label>
-        <input type="number" id="years" value="10" min="1" max="60" step="1">
+        <input type="number" inputmode="numeric" id="years" value="10" min="1" max="60" step="1">
       </div>
       <div class="field-row">
         <div class="field">
           <label for="rate">Return rate %/yr</label>
-          <input type="number" id="rate" value="6" min="0" max="20" step="0.1">
+          <input type="number" inputmode="decimal" id="rate" value="6" min="0" max="20" step="0.1">
         </div>
         <div class="field">
           <label for="compound">Compounds</label>
@@ -253,7 +253,7 @@
       </div>
       <div class="field">
         <label for="contrib">Additional contribution ($)</label>
-        <input type="number" id="contrib" value="1000" min="0" step="100">
+        <input type="number" inputmode="numeric" id="contrib" value="1000" min="0" step="100">
       </div>
       <div class="field-row">
         <div class="field">
